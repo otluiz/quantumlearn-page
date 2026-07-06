@@ -75,12 +75,12 @@ function Nav() {
           <a href="#" className="hover:text-foreground transition-colors">Docs</a>
         </nav>
         <div className="flex items-center gap-3">
-          <a href="#" className="hidden text-sm text-muted-foreground hover:text-foreground md:inline">Entrar</a>
+          <a href="/app" className="hidden text-sm text-muted-foreground hover:text-foreground md:inline">Entrar</a>
           <a
-            href="#cta"
+            href="/app"
             className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[var(--shadow-red)] transition-transform hover:scale-[1.02]"
           >
-            Começar grátis <ArrowRight className="h-3.5 w-3.5" />
+            Abrir workspace <ArrowRight className="h-3.5 w-3.5" />
           </a>
         </div>
       </div>
