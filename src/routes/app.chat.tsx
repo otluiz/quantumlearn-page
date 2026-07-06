@@ -24,7 +24,7 @@ const suggestions = [
 ];
 
 function ChatPage() {
-  const { data: docs, isLoading, isError, error } = useDocuments();
+  const { data: docs, isLoading, isError } = useDocuments();
   const ready = useMemo(() => (docs ?? []).filter(isDocReady), [docs]);
   const [selected, setSelected] = useState<LexDocument | null>(null);
 
@@ -72,17 +72,18 @@ function ChatPage() {
           cached: resp.from_cache,
         },
       ]);
-    } catch (e) {
+    } catch {
       setMessages((m) => [
         ...m,
         {
           id: Date.now() + 1,
           role: "assistant",
-          content: `⚠️ Erro consultando /api/ask: ${(e as Error).message}`,
+          content: "⚠️ Não consegui responder agora. Tente novamente em instantes.",
           time: new Date(),
         },
       ]);
     }
+
   };
 
   const time = (d: Date) =>
@@ -101,9 +102,10 @@ function ChatPage() {
         )}
         {isError && (
           <div className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-[11px] text-primary">
-            {(error as Error)?.message}
+            Não foi possível carregar seus documentos. Tente novamente em instantes.
           </div>
         )}
+
         {!isLoading && !isError && ready.length === 0 && (
           <p className="mt-4 text-xs text-muted-foreground">
             Nenhum documento processado. Envie um PDF no dashboard.
