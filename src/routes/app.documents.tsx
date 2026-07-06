@@ -2,13 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { FileText, Search, Filter, MoreVertical, Loader2, AlertTriangle, Upload } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
-  API_BASE,
   formatBytes,
   formatDate,
   isDocProcessing,
   isDocReady,
   type LexDocument,
 } from "@/lib/api";
+
 import { useDocuments } from "@/hooks/use-documents";
 
 export const Route = createFileRoute("/app/documents")({
