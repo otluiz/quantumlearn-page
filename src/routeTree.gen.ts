@@ -13,6 +13,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppStudyRouteImport } from './routes/app.study'
+import { Route as AppFlashcardsRouteImport } from './routes/app.flashcards'
 import { Route as AppDocumentsRouteImport } from './routes/app.documents'
 
 const AppRoute = AppRouteImport.update({
@@ -35,6 +36,11 @@ const AppStudyRoute = AppStudyRouteImport.update({
   path: '/study',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFlashcardsRoute = AppFlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDocumentsRoute = AppDocumentsRouteImport.update({
   id: '/documents',
   path: '/documents',
@@ -45,12 +51,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/app/documents': typeof AppDocumentsRoute
+  '/app/flashcards': typeof AppFlashcardsRoute
   '/app/study': typeof AppStudyRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/app/documents': typeof AppDocumentsRoute
+  '/app/flashcards': typeof AppFlashcardsRoute
   '/app/study': typeof AppStudyRoute
   '/app': typeof AppIndexRoute
 }
@@ -59,15 +67,29 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/app/documents': typeof AppDocumentsRoute
+  '/app/flashcards': typeof AppFlashcardsRoute
   '/app/study': typeof AppStudyRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/app/documents' | '/app/study' | '/app/'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/app/documents'
+    | '/app/flashcards'
+    | '/app/study'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app/documents' | '/app/study' | '/app'
-  id: '__root__' | '/' | '/app' | '/app/documents' | '/app/study' | '/app/'
+  to: '/' | '/app/documents' | '/app/flashcards' | '/app/study' | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/app/documents'
+    | '/app/flashcards'
+    | '/app/study'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,6 +127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudyRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/flashcards': {
+      id: '/app/flashcards'
+      path: '/flashcards'
+      fullPath: '/app/flashcards'
+      preLoaderRoute: typeof AppFlashcardsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/documents': {
       id: '/app/documents'
       path: '/documents'
@@ -117,12 +146,14 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppDocumentsRoute: typeof AppDocumentsRoute
+  AppFlashcardsRoute: typeof AppFlashcardsRoute
   AppStudyRoute: typeof AppStudyRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppDocumentsRoute: AppDocumentsRoute,
+  AppFlashcardsRoute: AppFlashcardsRoute,
   AppStudyRoute: AppStudyRoute,
   AppIndexRoute: AppIndexRoute,
 }
