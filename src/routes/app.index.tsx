@@ -14,42 +14,43 @@ import {
   AlertTriangle,
   Loader2,
 } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
+  api,
   formatBytes,
   formatDate,
   isDocProcessing,
   isDocReady,
   type LexDocument,
-  type ProcessingStage,
   API_BASE,
 } from "@/lib/api";
-import {
-  useDocuments,
-  useReprocessDocument,
-  useUploadDocument,
-} from "@/hooks/use-documents";
+import { useDocuments, useReprocessDocument, documentsKey } from "@/hooks/use-documents";
+import { UploadProgress, deriveStage } from "@/components/upload-progress";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({ meta: [{ title: "Dashboard — Nexlearn" }] }),
   component: Dashboard,
 });
 
-const STAGE_LABEL: Record<ProcessingStage, string> = {
-  queued: "na fila",
-  extraction: "extraindo TXT",
-  chunking: "gerando chunks",
-  embedding: "gerando embeddings",
-  classification: "classificando",
-  completed: "pronto",
-};
+interface PendingUpload {
+  id: string; // temp id local
+  filename: string;
+  size: number;
+  phase: "uploading" | "validating" | "sent" | "failed";
+  percent: number;
+  docId?: string | number;
+  error?: string;
+  finishedAt?: number;
+}
 
 function Dashboard() {
+  const qc = useQueryClient();
   const { data: docs, isLoading, isError, error, refetch } = useDocuments();
-  const upload = useUploadDocument();
   const reprocess = useReprocessDocument();
 
   const [dragActive, setDragActive] = useState(false);
+  const [pending, setPending] = useState<PendingUpload[]>([]);
   const fileInput = useRef<HTMLInputElement>(null);
 
   const list = docs ?? [];
@@ -57,20 +58,71 @@ function Dashboard() {
   const processed = list.filter(isDocReady).length;
   const processing = list.filter(isDocProcessing).length;
 
-  const handleFiles = useCallback(
-    async (files: FileList | File[] | null) => {
-      if (!files) return;
-      const arr = Array.from(files).filter((f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"));
-      for (const file of arr) {
-        try {
-          await upload.mutateAsync(file);
-        } catch (e) {
-          console.error("upload failed", file.name, e);
-        }
+  // IDs de docs já rastreados por uploads locais -> não duplicar cards de progresso.
+  const trackedDocIds = useMemo(
+    () => new Set(pending.map((p) => p.docId).filter(Boolean) as (string | number)[]),
+    [pending],
+  );
+
+  // Docs vindos do backend que ainda não estão prontos (e não estão sendo rastreados por upload local)
+  const backendInProgress = list.filter(
+    (d) => !isDocReady(d) && !trackedDocIds.has(d.id),
+  );
+
+  const updatePending = useCallback((id: string, patch: Partial<PendingUpload>) => {
+    setPending((p) => p.map((x) => (x.id === id ? { ...x, ...patch } : x)));
+  }, []);
+
+  const startUpload = useCallback(
+    async (file: File) => {
+      const tempId = `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      setPending((p) => [
+        ...p,
+        {
+          id: tempId,
+          filename: file.name,
+          size: file.size,
+          phase: "uploading",
+          percent: 0,
+        },
+      ]);
+
+      try {
+        const doc = await api.uploadWithProgress(file, (percent) =>
+          updatePending(tempId, { percent }),
+        );
+        // Grace period "validation" para transição visível antes do worker pegar
+        updatePending(tempId, { phase: "validating", percent: 100, docId: doc.id });
+        qc.invalidateQueries({ queryKey: documentsKey });
+        setTimeout(() => {
+          updatePending(tempId, { phase: "sent" });
+        }, 700);
+      } catch (e) {
+        updatePending(tempId, {
+          phase: "failed",
+          error: (e as Error).message,
+          finishedAt: Date.now(),
+        });
       }
     },
-    [upload],
+    [qc, updatePending],
   );
+
+  const handleFiles = useCallback(
+    (files: FileList | File[] | null) => {
+      if (!files) return;
+      const arr = Array.from(files).filter(
+        (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"),
+      );
+      arr.forEach(startUpload);
+    },
+    [startUpload],
+  );
+
+  const dismissPending = (id: string) =>
+    setPending((p) => p.filter((x) => x.id !== id));
+
+  const uploadingCount = pending.filter((p) => p.phase === "uploading" || p.phase === "validating" || p.phase === "sent").length;
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10">
@@ -97,7 +149,7 @@ function Dashboard() {
         <StatCard icon={Cog} label="Em processamento" value={processing} accent="muted" />
       </div>
 
-      {/* Upload */}
+      {/* Upload dropzone */}
       <div
         onDragEnter={(e) => {
           e.preventDefault();
@@ -122,7 +174,7 @@ function Dashboard() {
         <div className="pointer-events-none absolute inset-0 opacity-40" style={{ background: "var(--gradient-hero)" }} />
         <div className="relative flex flex-col items-center text-center">
           <div className="grid h-14 w-14 place-items-center rounded-full bg-primary/15 text-primary shadow-[var(--shadow-glow)]">
-            {upload.isPending ? <Loader2 className="h-6 w-6 animate-spin" /> : <Upload className="h-6 w-6" />}
+            {uploadingCount > 0 ? <Loader2 className="h-6 w-6 animate-spin" /> : <Upload className="h-6 w-6" />}
           </div>
           <h3 className="mt-4 font-display text-xl font-semibold">Processar novo documento</h3>
           <p className="mt-1 text-sm text-muted-foreground">
@@ -141,17 +193,59 @@ function Dashboard() {
           />
           <button
             onClick={() => fileInput.current?.click()}
-            disabled={upload.isPending}
-            className="mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-red)] transition-transform hover:scale-[1.02] disabled:opacity-60"
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-red)] transition-transform hover:scale-[1.02]"
           >
             <Upload className="h-4 w-4" />
-            {upload.isPending ? "Enviando..." : "Selecionar PDF"}
+            Selecionar PDF
           </button>
-          {upload.isError && (
-            <p className="mt-3 text-xs text-primary">Falha no upload: {(upload.error as Error).message}</p>
-          )}
         </div>
       </div>
+
+      {/* Painel de progresso — uploads locais + docs em processamento no backend */}
+      {(pending.length > 0 || backendInProgress.length > 0) && (
+        <section className="mt-8">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="font-display text-lg font-semibold">Pipeline de ingestão</h2>
+            <span className="text-[11px] uppercase tracking-widest text-muted-foreground/70">
+              atualização em tempo real
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {pending.map((p) => {
+              const doc = p.docId ? list.find((d) => d.id === p.docId) : undefined;
+              const stage =
+                p.phase === "failed"
+                  ? "storage"
+                  : p.phase === "uploading"
+                    ? "receiving"
+                    : doc
+                      ? deriveStage({ doc })
+                      : deriveStage({ localPhase: p.phase });
+              return (
+                <UploadProgress
+                  key={p.id}
+                  filename={p.filename}
+                  stage={stage}
+                  uploadPercent={p.phase === "uploading" ? p.percent : undefined}
+                  failed={p.phase === "failed"}
+                  errorMessage={p.error}
+                  onDismiss={() => dismissPending(p.id)}
+                />
+              );
+            })}
+
+            {backendInProgress.map((d) => (
+              <UploadProgress
+                key={`doc-${d.id}`}
+                filename={d.filename_original}
+                stage={deriveStage({ doc: d })}
+                failed={d.status === "failed" || d.processing_status === "failed"}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Recent docs */}
       <div className="mt-10 flex items-end justify-between">
@@ -186,7 +280,7 @@ function Dashboard() {
         </div>
       )}
 
-      {!isLoading && !isError && list.length === 0 && (
+      {!isLoading && !isError && list.length === 0 && pending.length === 0 && (
         <div className="mt-6 rounded-xl border border-dashed border-border/60 bg-surface/30 p-8 text-center text-sm text-muted-foreground">
           Nenhum documento ainda. Envie o primeiro PDF acima.
         </div>
@@ -244,7 +338,6 @@ function StatCard({
 function DocCard({ doc, onProcess, busy }: { doc: LexDocument; onProcess: () => void; busy: boolean }) {
   const ready = isDocReady(doc);
   const processing = isDocProcessing(doc);
-  const stageText = doc.processing_stage ? STAGE_LABEL[doc.processing_stage] : "processando…";
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border/60 bg-surface/60 p-5 transition-all hover:border-primary/40 hover:shadow-[var(--shadow-red)]">
@@ -273,7 +366,7 @@ function DocCard({ doc, onProcess, busy }: { doc: LexDocument; onProcess: () => 
           </>
         ) : processing ? (
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs text-primary">
-            <Cog className="h-3 w-3 animate-spin" /> {stageText}
+            <Cog className="h-3 w-3 animate-spin" /> {doc.processing_stage ?? "processando"}
           </span>
         ) : (
           <button
