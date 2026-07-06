@@ -10,7 +10,6 @@ import {
   MessageSquare,
   Cog,
   ArrowUpRight,
-  TrendingUp,
   AlertTriangle,
   Loader2,
 } from "lucide-react";
@@ -23,8 +22,8 @@ import {
   isDocProcessing,
   isDocReady,
   type LexDocument,
-  API_BASE,
 } from "@/lib/api";
+
 import { useDocuments, useReprocessDocument, documentsKey } from "@/hooks/use-documents";
 import { UploadProgress, deriveStage } from "@/components/upload-progress";
 
