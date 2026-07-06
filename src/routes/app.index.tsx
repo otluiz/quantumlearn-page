@@ -11,55 +11,69 @@ import {
   Cog,
   ArrowUpRight,
   TrendingUp,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import {
+  formatBytes,
+  formatDate,
+  isDocProcessing,
+  isDocReady,
+  type LexDocument,
+  type ProcessingStage,
+  API_BASE,
+} from "@/lib/api";
+import {
+  useDocuments,
+  useReprocessDocument,
+  useUploadDocument,
+} from "@/hooks/use-documents";
 
 export const Route = createFileRoute("/app/")({
-  head: () => ({
-    meta: [{ title: "Dashboard — Nexlearn" }],
-  }),
+  head: () => ({ meta: [{ title: "Dashboard — Nexlearn" }] }),
   component: Dashboard,
 });
 
-type DocStatus = "uploaded" | "processing" | "processed";
-
-interface Doc {
-  id: string;
-  name: string;
-  size: string;
-  date: string;
-  status: DocStatus;
-}
-
-const initialDocs: Doc[] = [
-  { id: "1", name: "Direito_Constitucional.pdf", size: "3.1 MB", date: "2026-01-04", status: "processed" },
-  { id: "2", name: "D1171.pdf", size: "0.08 MB", date: "2026-01-23", status: "processed" },
-  { id: "3", name: "L9394_LDB.pdf", size: "1.4 MB", date: "2026-02-11", status: "processing" },
-  { id: "4", name: "L8112_ServPubFed.pdf", size: "2.7 MB", date: "2026-02-14", status: "uploaded" },
-  { id: "5", name: "L8069_ECA.pdf", size: "0.9 MB", date: "2026-02-18", status: "uploaded" },
-  { id: "6", name: "L11892_ETPF.pdf", size: "1.1 MB", date: "2026-02-20", status: "processed" },
-  { id: "7", name: "D54142_PE.pdf", size: "0.5 MB", date: "2026-02-22", status: "uploaded" },
-  { id: "8", name: "lei_8429_improbidade.pdf", size: "1.8 MB", date: "2026-02-25", status: "uploaded" },
-];
+const STAGE_LABEL: Record<ProcessingStage, string> = {
+  queued: "na fila",
+  extraction: "extraindo TXT",
+  chunking: "gerando chunks",
+  embedding: "gerando embeddings",
+  classification: "classificando",
+  completed: "pronto",
+};
 
 function Dashboard() {
-  const [docs, setDocs] = useState(initialDocs);
+  const { data: docs, isLoading, isError, error, refetch } = useDocuments();
+  const upload = useUploadDocument();
+  const reprocess = useReprocessDocument();
+
   const [dragActive, setDragActive] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
 
-  const raw = docs.filter((d) => d.status === "uploaded").length;
-  const processed = docs.filter((d) => d.status === "processed").length;
-  const quizzes = processed * 3;
+  const list = docs ?? [];
+  const raw = list.filter((d) => d.status === "uploaded" && !isDocProcessing(d)).length;
+  const processed = list.filter(isDocReady).length;
+  const processing = list.filter(isDocProcessing).length;
 
-  const process = useCallback((id: string) => {
-    setDocs((prev) => prev.map((d) => (d.id === id ? { ...d, status: "processing" } : d)));
-    setTimeout(() => {
-      setDocs((prev) => prev.map((d) => (d.id === id ? { ...d, status: "processed" } : d)));
-    }, 2200);
-  }, []);
+  const handleFiles = useCallback(
+    async (files: FileList | File[] | null) => {
+      if (!files) return;
+      const arr = Array.from(files).filter((f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"));
+      for (const file of arr) {
+        try {
+          await upload.mutateAsync(file);
+        } catch (e) {
+          console.error("upload failed", file.name, e);
+        }
+      }
+    },
+    [upload],
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10">
-      {/* Heading */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs uppercase tracking-widest text-primary/80">Painel de controle</p>
@@ -67,12 +81,12 @@ function Dashboard() {
             Bem-vindo de volta, <span className="text-gradient-red">Aluno</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Continue seus estudos ou processe um novo documento com IA.
+            Envie um PDF para iniciar o pipeline: upload → extração → chunks → embeddings.
           </p>
         </div>
         <div className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs text-primary">
           <TrendingUp className="h-3.5 w-3.5" />
-          +24% de retenção esta semana
+          API: {API_BASE.replace(/^https?:\/\//, "")}
         </div>
       </div>
 
@@ -80,7 +94,7 @@ function Dashboard() {
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard icon={FileText} label="PDFs Brutos" value={raw} accent="muted" />
         <StatCard icon={CheckCircle2} label="Processados" value={processed} accent="primary" />
-        <StatCard icon={BookOpen} label="Quizzes Gerados" value={quizzes} accent="muted" />
+        <StatCard icon={Cog} label="Em processamento" value={processing} accent="muted" />
       </div>
 
       {/* Upload */}
@@ -97,6 +111,7 @@ function Dashboard() {
         onDrop={(e) => {
           e.preventDefault();
           setDragActive(false);
+          handleFiles(e.dataTransfer.files);
         }}
         className={`mt-6 relative overflow-hidden rounded-2xl border-2 border-dashed p-10 transition-all ${
           dragActive
@@ -107,16 +122,34 @@ function Dashboard() {
         <div className="pointer-events-none absolute inset-0 opacity-40" style={{ background: "var(--gradient-hero)" }} />
         <div className="relative flex flex-col items-center text-center">
           <div className="grid h-14 w-14 place-items-center rounded-full bg-primary/15 text-primary shadow-[var(--shadow-glow)]">
-            <Upload className="h-6 w-6" />
+            {upload.isPending ? <Loader2 className="h-6 w-6 animate-spin" /> : <Upload className="h-6 w-6" />}
           </div>
           <h3 className="mt-4 font-display text-xl font-semibold">Processar novo documento</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Arraste seu PDF aqui ou clique para selecionar. A IA cuida do resto.
+            Arraste seu PDF aqui ou clique para selecionar. POST <code className="text-primary/80">/api/upload</code> → RabbitMQ → Worker.
           </p>
-          <button className="mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-red)] transition-transform hover:scale-[1.02]">
+          <input
+            ref={fileInput}
+            type="file"
+            accept="application/pdf"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              handleFiles(e.target.files);
+              e.target.value = "";
+            }}
+          />
+          <button
+            onClick={() => fileInput.current?.click()}
+            disabled={upload.isPending}
+            className="mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-red)] transition-transform hover:scale-[1.02] disabled:opacity-60"
+          >
             <Upload className="h-4 w-4" />
-            Selecionar PDF
+            {upload.isPending ? "Enviando..." : "Selecionar PDF"}
           </button>
+          {upload.isError && (
+            <p className="mt-3 text-xs text-primary">Falha no upload: {(upload.error as Error).message}</p>
+          )}
         </div>
       </div>
 
@@ -131,11 +164,46 @@ function Dashboard() {
         </Link>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {docs.map((doc) => (
-          <DocCard key={doc.id} doc={doc} onProcess={() => process(doc.id)} />
-        ))}
-      </div>
+      {isLoading && (
+        <div className="mt-6 flex items-center gap-2 rounded-xl border border-border/60 bg-surface/40 p-6 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" /> Carregando documentos da API...
+        </div>
+      )}
+
+      {isError && (
+        <div className="mt-6 flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-5 text-sm">
+          <AlertTriangle className="h-5 w-5 shrink-0 text-primary" />
+          <div className="flex-1">
+            <p className="font-semibold text-foreground">Não consegui falar com {API_BASE}</p>
+            <p className="mt-1 text-xs text-muted-foreground">{(error as Error)?.message}</p>
+            <button
+              onClick={() => refetch()}
+              className="mt-3 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary hover:bg-primary/20"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!isLoading && !isError && list.length === 0 && (
+        <div className="mt-6 rounded-xl border border-dashed border-border/60 bg-surface/30 p-8 text-center text-sm text-muted-foreground">
+          Nenhum documento ainda. Envie o primeiro PDF acima.
+        </div>
+      )}
+
+      {list.length > 0 && (
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {list.slice(0, 8).map((doc) => (
+            <DocCard
+              key={doc.id}
+              doc={doc}
+              onProcess={() => reprocess.mutate(doc.id)}
+              busy={reprocess.isPending && reprocess.variables === doc.id}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -173,40 +241,48 @@ function StatCard({
   );
 }
 
-function DocCard({ doc, onProcess }: { doc: Doc; onProcess: () => void }) {
+function DocCard({ doc, onProcess, busy }: { doc: LexDocument; onProcess: () => void; busy: boolean }) {
+  const ready = isDocReady(doc);
+  const processing = isDocProcessing(doc);
+  const stageText = doc.processing_stage ? STAGE_LABEL[doc.processing_stage] : "processando…";
+
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-xl border border-border/60 bg-surface/60 p-5 transition-all hover:border-primary/40 hover:shadow-[var(--shadow-red)]">
       <div className="flex items-start justify-between">
         <div className="grid h-10 w-10 place-items-center rounded-lg bg-white/5 text-muted-foreground group-hover:text-primary transition-colors">
           <FileText className="h-5 w-5" />
         </div>
-        <StatusPill status={doc.status} />
+        <StatusPill doc={doc} />
       </div>
 
-      <h3 className="mt-4 truncate text-sm font-semibold text-foreground" title={doc.name}>
-        {doc.name}
+      <h3 className="mt-4 truncate text-sm font-semibold text-foreground" title={doc.filename_original}>
+        {doc.filename_original}
       </h3>
       <p className="mt-1 text-xs text-muted-foreground">
-        {doc.size} · {doc.date}
+        {formatBytes(doc.file_size)} · {formatDate(doc.created_at)}
+        {doc.logical_type ? ` · ${doc.logical_type}` : doc.document_type ? ` · ${doc.document_type}` : ""}
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        {doc.status === "processed" ? (
+        {ready ? (
           <>
-            <ActionBtn icon={FileQuestion} label="Quiz" />
-            <ActionBtn icon={Layers} label="Cards" />
+            <ActionBtn icon={BookOpen} label="Resumo" />
+            <ActionBtn icon={FileQuestion} label="10 Quiz" />
+            <ActionBtn icon={Layers} label="Flashcards" />
             <ActionBtn icon={MessageSquare} label="Chat" href="/app/chat" />
           </>
-        ) : doc.status === "processing" ? (
+        ) : processing ? (
           <span className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs text-primary">
-            <Cog className="h-3 w-3 animate-spin" /> processando…
+            <Cog className="h-3 w-3 animate-spin" /> {stageText}
           </span>
         ) : (
           <button
             onClick={onProcess}
-            className="inline-flex items-center gap-1.5 rounded-md bg-primary/90 px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary"
+            disabled={busy}
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary/90 px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary disabled:opacity-60"
           >
-            <Zap className="h-3 w-3" /> Processar
+            {busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <Zap className="h-3 w-3" />}
+            {busy ? "Enfileirando..." : "Processar"}
           </button>
         )}
       </div>
@@ -239,16 +315,22 @@ function ActionBtn({
   );
 }
 
-function StatusPill({ status }: { status: DocStatus }) {
-  const map = {
-    uploaded: { text: "uploaded", cls: "border-border/60 bg-white/5 text-muted-foreground" },
-    processing: { text: "processando", cls: "border-primary/30 bg-primary/10 text-primary" },
-    processed: { text: "processed", cls: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" },
-  } as const;
-  const s = map[status];
+function StatusPill({ doc }: { doc: LexDocument }) {
+  const processing = isDocProcessing(doc);
+  const ready = isDocReady(doc);
+  const failed = doc.status === "failed" || doc.processing_status === "failed";
+
+  const conf = failed
+    ? { text: "falhou", cls: "border-primary/40 bg-primary/15 text-primary" }
+    : ready
+      ? { text: "pronto", cls: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" }
+      : processing
+        ? { text: doc.processing_stage ?? "processando", cls: "border-primary/30 bg-primary/10 text-primary" }
+        : { text: "uploaded", cls: "border-border/60 bg-white/5 text-muted-foreground" };
+
   return (
-    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${s.cls}`}>
-      {s.text}
+    <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${conf.cls}`}>
+      {conf.text}
     </span>
   );
 }
