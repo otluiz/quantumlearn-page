@@ -45,7 +45,7 @@ interface PendingUpload {
 
 function Dashboard() {
   const qc = useQueryClient();
-  const { data: docs, isLoading, isError, error, refetch } = useDocuments();
+  const { data: docs, isLoading, isError, refetch } = useDocuments();
   const reprocess = useReprocessDocument();
 
   const [dragActive, setDragActive] = useState(false);
