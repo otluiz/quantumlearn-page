@@ -17,7 +17,7 @@ export const Route = createFileRoute("/app/documents")({
 });
 
 function DocumentsPage() {
-  const { data, isLoading, isError, error, refetch } = useDocuments();
+  const { data, isLoading, isError, refetch } = useDocuments();
   const [q, setQ] = useState("");
 
   const rows = useMemo(() => {
@@ -37,7 +37,7 @@ function DocumentsPage() {
         <div>
           <p className="text-xs uppercase tracking-widest text-primary/80">Biblioteca</p>
           <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">Documentos</h1>
-          <p className="mt-1 text-xs text-muted-foreground">GET {API_BASE}/api/documents</p>
+          <p className="mt-1 text-xs text-muted-foreground">Seus materiais de estudo</p>
         </div>
         <div className="flex gap-2">
           <div className="relative">
@@ -65,8 +65,8 @@ function DocumentsPage() {
         <div className="mt-8 flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-5 text-sm">
           <AlertTriangle className="h-5 w-5 shrink-0 text-primary" />
           <div className="flex-1">
-            <p className="font-semibold text-foreground">Falha ao consultar {API_BASE}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{(error as Error)?.message}</p>
+            <p className="font-semibold text-foreground">Não foi possível carregar seus documentos</p>
+            <p className="mt-1 text-xs text-muted-foreground">Verifique sua conexão e tente novamente em instantes.</p>
             <button
               onClick={() => refetch()}
               className="mt-3 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary hover:bg-primary/20"
@@ -76,6 +76,7 @@ function DocumentsPage() {
           </div>
         </div>
       )}
+
 
       {!isLoading && !isError && rows.length === 0 && (
         <div className="mt-8 rounded-xl border border-dashed border-border/60 bg-surface/30 p-10 text-center text-sm text-muted-foreground">
