@@ -101,9 +101,10 @@ function ChatPage() {
         )}
         {isError && (
           <div className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-[11px] text-primary">
-            {(error as Error)?.message}
+            Não foi possível carregar seus documentos. Tente novamente em instantes.
           </div>
         )}
+
         {!isLoading && !isError && ready.length === 0 && (
           <p className="mt-4 text-xs text-muted-foreground">
             Nenhum documento processado. Envie um PDF no dashboard.
