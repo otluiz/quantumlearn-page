@@ -133,13 +133,10 @@ function Dashboard() {
             Bem-vindo de volta, <span className="text-gradient-red">Aluno</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Envie um PDF para iniciar o pipeline: upload → extração → chunks → embeddings.
+            Envie um PDF para começar seus estudos.
           </p>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs text-primary">
-          <TrendingUp className="h-3.5 w-3.5" />
-          API: {API_BASE.replace(/^https?:\/\//, "")}
-        </div>
+
       </div>
 
       {/* Stats */}
