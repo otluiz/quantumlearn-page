@@ -10,7 +10,6 @@ import {
   MessageSquare,
   Cog,
   ArrowUpRight,
-  TrendingUp,
   AlertTriangle,
   Loader2,
 } from "lucide-react";
@@ -23,8 +22,8 @@ import {
   isDocProcessing,
   isDocReady,
   type LexDocument,
-  API_BASE,
 } from "@/lib/api";
+
 import { useDocuments, useReprocessDocument, documentsKey } from "@/hooks/use-documents";
 import { UploadProgress, deriveStage } from "@/components/upload-progress";
 
@@ -46,7 +45,7 @@ interface PendingUpload {
 
 function Dashboard() {
   const qc = useQueryClient();
-  const { data: docs, isLoading, isError, error, refetch } = useDocuments();
+  const { data: docs, isLoading, isError, refetch } = useDocuments();
   const reprocess = useReprocessDocument();
 
   const [dragActive, setDragActive] = useState(false);
@@ -133,13 +132,10 @@ function Dashboard() {
             Bem-vindo de volta, <span className="text-gradient-red">Aluno</span>
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Envie um PDF para iniciar o pipeline: upload → extração → chunks → embeddings.
+            Envie um PDF para começar seus estudos.
           </p>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-md border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs text-primary">
-          <TrendingUp className="h-3.5 w-3.5" />
-          API: {API_BASE.replace(/^https?:\/\//, "")}
-        </div>
+
       </div>
 
       {/* Stats */}
@@ -178,8 +174,9 @@ function Dashboard() {
           </div>
           <h3 className="mt-4 font-display text-xl font-semibold">Processar novo documento</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Arraste seu PDF aqui ou clique para selecionar. POST <code className="text-primary/80">/api/upload</code> → RabbitMQ → Worker.
+            Arraste seu PDF aqui ou clique para selecionar.
           </p>
+
           <input
             ref={fileInput}
             type="file"
@@ -268,8 +265,8 @@ function Dashboard() {
         <div className="mt-6 flex items-start gap-3 rounded-xl border border-primary/30 bg-primary/5 p-5 text-sm">
           <AlertTriangle className="h-5 w-5 shrink-0 text-primary" />
           <div className="flex-1">
-            <p className="font-semibold text-foreground">Não consegui falar com {API_BASE}</p>
-            <p className="mt-1 text-xs text-muted-foreground">{(error as Error)?.message}</p>
+            <p className="font-semibold text-foreground">Não foi possível carregar seus documentos</p>
+            <p className="mt-1 text-xs text-muted-foreground">Verifique sua conexão e tente novamente.</p>
             <button
               onClick={() => refetch()}
               className="mt-3 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs text-primary hover:bg-primary/20"
@@ -279,6 +276,7 @@ function Dashboard() {
           </div>
         </div>
       )}
+
 
       {!isLoading && !isError && list.length === 0 && pending.length === 0 && (
         <div className="mt-6 rounded-xl border border-dashed border-border/60 bg-surface/30 p-8 text-center text-sm text-muted-foreground">
