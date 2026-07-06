@@ -175,8 +175,9 @@ function Dashboard() {
           </div>
           <h3 className="mt-4 font-display text-xl font-semibold">Processar novo documento</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Arraste seu PDF aqui ou clique para selecionar. POST <code className="text-primary/80">/api/upload</code> → RabbitMQ → Worker.
+            Arraste seu PDF aqui ou clique para selecionar.
           </p>
+
           <input
             ref={fileInput}
             type="file"
