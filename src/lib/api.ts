@@ -138,6 +138,40 @@ export const api = {
     });
   },
 
+  /**
+   * Upload com progresso real (XHR) — usado pela UI do pipeline para
+   * mostrar a barra "Recebendo arquivo" em tempo real.
+   */
+  uploadWithProgress: (
+    file: File,
+    onProgress: (percent: number) => void,
+    description?: string,
+  ): Promise<LexDocument> =>
+    new Promise((resolve, reject) => {
+      const form = new FormData();
+      form.append("file", file);
+      if (description) form.append("description", description);
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", `${API_BASE}/api/upload`);
+      xhr.responseType = "text";
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100));
+      };
+      xhr.onerror = () => reject(new ApiError(0, `${API_BASE}/api/upload`, "network error"));
+      xhr.onload = () => {
+        if (xhr.status < 200 || xhr.status >= 300) {
+          reject(new ApiError(xhr.status, `${API_BASE}/api/upload`, xhr.responseText?.slice(0, 300) || xhr.statusText));
+          return;
+        }
+        try {
+          resolve(JSON.parse(xhr.responseText) as LexDocument);
+        } catch {
+          reject(new ApiError(xhr.status, `${API_BASE}/api/upload`, "invalid JSON response"));
+        }
+      };
+      xhr.send(form);
+    }),
+
   reprocess: (id: string | number) =>
     request<LexDocument>(`/api/process/${encodeURIComponent(String(id))}`, {
       method: "POST",
