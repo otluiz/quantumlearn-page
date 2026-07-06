@@ -13,6 +13,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppStudyRouteImport } from './routes/app.study'
+import { Route as AppStatsRouteImport } from './routes/app.stats'
 import { Route as AppFlashcardsRouteImport } from './routes/app.flashcards'
 import { Route as AppDocumentsRouteImport } from './routes/app.documents'
 import { Route as AppChatRouteImport } from './routes/app.chat'
@@ -37,6 +38,11 @@ const AppStudyRoute = AppStudyRouteImport.update({
   path: '/study',
   getParentRoute: () => AppRoute,
 } as any)
+const AppStatsRoute = AppStatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppFlashcardsRoute = AppFlashcardsRouteImport.update({
   id: '/flashcards',
   path: '/flashcards',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
+  '/app/stats': typeof AppStatsRoute
   '/app/study': typeof AppStudyRoute
   '/app/': typeof AppIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
+  '/app/stats': typeof AppStatsRoute
   '/app/study': typeof AppStudyRoute
   '/app': typeof AppIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
+  '/app/stats': typeof AppStatsRoute
   '/app/study': typeof AppStudyRoute
   '/app/': typeof AppIndexRoute
 }
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
+    | '/app/stats'
     | '/app/study'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
+    | '/app/stats'
     | '/app/study'
     | '/app'
   id:
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
+    | '/app/stats'
     | '/app/study'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -144,6 +156,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppStudyRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/stats': {
+      id: '/app/stats'
+      path: '/stats'
+      fullPath: '/app/stats'
+      preLoaderRoute: typeof AppStatsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/flashcards': {
       id: '/app/flashcards'
       path: '/flashcards'
@@ -172,6 +191,7 @@ interface AppRouteChildren {
   AppChatRoute: typeof AppChatRoute
   AppDocumentsRoute: typeof AppDocumentsRoute
   AppFlashcardsRoute: typeof AppFlashcardsRoute
+  AppStatsRoute: typeof AppStatsRoute
   AppStudyRoute: typeof AppStudyRoute
   AppIndexRoute: typeof AppIndexRoute
 }
@@ -180,6 +200,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppChatRoute: AppChatRoute,
   AppDocumentsRoute: AppDocumentsRoute,
   AppFlashcardsRoute: AppFlashcardsRoute,
+  AppStatsRoute: AppStatsRoute,
   AppStudyRoute: AppStudyRoute,
   AppIndexRoute: AppIndexRoute,
 }
