@@ -72,17 +72,18 @@ function ChatPage() {
           cached: resp.from_cache,
         },
       ]);
-    } catch (e) {
+    } catch {
       setMessages((m) => [
         ...m,
         {
           id: Date.now() + 1,
           role: "assistant",
-          content: `⚠️ Erro consultando /api/ask: ${(e as Error).message}`,
+          content: "⚠️ Não consegui responder agora. Tente novamente em instantes.",
           time: new Date(),
         },
       ]);
     }
+
   };
 
   const time = (d: Date) =>
