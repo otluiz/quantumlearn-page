@@ -24,7 +24,7 @@ const suggestions = [
 ];
 
 function ChatPage() {
-  const { data: docs, isLoading, isError, error } = useDocuments();
+  const { data: docs, isLoading, isError } = useDocuments();
   const ready = useMemo(() => (docs ?? []).filter(isDocReady), [docs]);
   const [selected, setSelected] = useState<LexDocument | null>(null);
 
