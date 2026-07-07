@@ -257,7 +257,7 @@ function Dashboard() {
 
       {isLoading && (
         <div className="mt-6 flex items-center gap-2 rounded-xl border border-border/60 bg-surface/40 p-6 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Carregando documentos da API...
+          <Loader2 className="h-4 w-4 animate-spin" /> Carregando documentos...
         </div>
       )}
 
