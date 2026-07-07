@@ -151,10 +151,10 @@ function Status({ doc }: { doc: LexDocument }) {
   const conf = failed
     ? { text: "falhou", cls: "border-primary/40 bg-primary/15 text-primary" }
     : ready
-      ? { text: "processed", cls: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" }
+      ? { text: "processado", cls: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" }
       : processing
-        ? { text: doc.processing_stage ?? "processing", cls: "border-primary/30 bg-primary/10 text-primary" }
-        : { text: "uploaded", cls: "border-border/60 bg-white/5 text-muted-foreground" };
+        ? { text: doc.processing_stage ?? "processando", cls: "border-primary/30 bg-primary/10 text-primary" }
+        : { text: "enviado", cls: "border-border/60 bg-white/5 text-muted-foreground" };
 
   return (
     <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium ${conf.cls}`}>

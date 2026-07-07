@@ -417,7 +417,7 @@ function StatusPill({ doc }: { doc: LexDocument }) {
       ? { text: "pronto", cls: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" }
       : processing
         ? { text: doc.processing_stage ?? "processando", cls: "border-primary/30 bg-primary/10 text-primary" }
-        : { text: "uploaded", cls: "border-border/60 bg-white/5 text-muted-foreground" };
+        : { text: "enviado", cls: "border-border/60 bg-white/5 text-muted-foreground" };
 
   return (
     <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${conf.cls}`}>
