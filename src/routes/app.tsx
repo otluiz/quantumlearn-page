@@ -39,7 +39,8 @@ function AppLayout() {
                 <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-primary" />
                 sistema online
               </span>
-              <button className="grid h-9 w-9 place-items-center rounded-md border border-border/60 bg-surface/60 text-muted-foreground transition-colors hover:text-foreground">
+              <ThemeToggle compact />
+              <button aria-label="Notificações" className="grid h-9 w-9 place-items-center rounded-md border border-border/60 bg-surface/60 text-muted-foreground transition-colors hover:text-foreground">
                 <Bell className="h-4 w-4" />
               </button>
             </div>
