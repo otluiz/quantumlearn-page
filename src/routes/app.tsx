@@ -2,6 +2,7 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Bell, Search } from "lucide-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/app")({
   head: () => ({
@@ -38,7 +39,8 @@ function AppLayout() {
                 <span className="h-1.5 w-1.5 animate-glow-pulse rounded-full bg-primary" />
                 sistema online
               </span>
-              <button className="grid h-9 w-9 place-items-center rounded-md border border-border/60 bg-surface/60 text-muted-foreground transition-colors hover:text-foreground">
+              <ThemeToggle compact />
+              <button aria-label="Notificações" className="grid h-9 w-9 place-items-center rounded-md border border-border/60 bg-surface/60 text-muted-foreground transition-colors hover:text-foreground">
                 <Bell className="h-4 w-4" />
               </button>
             </div>

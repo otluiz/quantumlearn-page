@@ -17,6 +17,7 @@ import {
 import dashboardMockup from "@/assets/dashboard-mockup.jpg";
 import mobileMockup from "@/assets/mobile-mockup.jpg";
 import heroBg from "@/assets/hero-bg.jpg";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -75,6 +76,7 @@ function Nav() {
           <a href="#" className="hover:text-foreground transition-colors">Docs</a>
         </nav>
         <div className="flex items-center gap-3">
+          <ThemeToggle compact />
           <a href="/app" className="hidden text-sm text-muted-foreground hover:text-foreground md:inline">Entrar</a>
           <a
             href="/app"

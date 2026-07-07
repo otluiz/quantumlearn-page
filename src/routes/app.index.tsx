@@ -257,7 +257,7 @@ function Dashboard() {
 
       {isLoading && (
         <div className="mt-6 flex items-center gap-2 rounded-xl border border-border/60 bg-surface/40 p-6 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin" /> Carregando documentos da API...
+          <Loader2 className="h-4 w-4 animate-spin" /> Carregando documentos...
         </div>
       )}
 
@@ -417,7 +417,7 @@ function StatusPill({ doc }: { doc: LexDocument }) {
       ? { text: "pronto", cls: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400" }
       : processing
         ? { text: doc.processing_stage ?? "processando", cls: "border-primary/30 bg-primary/10 text-primary" }
-        : { text: "uploaded", cls: "border-border/60 bg-white/5 text-muted-foreground" };
+        : { text: "enviado", cls: "border-border/60 bg-white/5 text-muted-foreground" };
 
   return (
     <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium ${conf.cls}`}>

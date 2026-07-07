@@ -68,7 +68,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/40 bg-[oklch(0.11_0.01_20)]">
+    <Sidebar collapsible="icon" className="border-r border-border/40" style={{ backgroundColor: "var(--sidebar)" }}>
       <SidebarHeader className="border-b border-border/40 py-4">
         <Link to="/app" className="flex items-center gap-2 px-2">
           <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary shadow-[var(--shadow-glow)]">

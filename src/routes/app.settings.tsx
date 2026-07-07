@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { User, Bell, Palette, Shield, Zap } from "lucide-react";
+import { useTheme, THEMES, type Theme } from "@/lib/theme";
 
 export const Route = createFileRoute("/app/settings")({
   head: () => ({ meta: [{ title: "Configurações — Nexlearn" }] }),
@@ -46,12 +47,8 @@ function SettingsPage() {
         />
       </Section>
 
-      <Section icon={Palette} title="Aparência" desc="Tema visual do workspace.">
-        <div className="grid grid-cols-3 gap-3">
-          <ThemeCard label="Dark Red" active gradient="linear-gradient(135deg, oklch(0.13 0.01 20), oklch(0.35 0.15 25))" />
-          <ThemeCard label="Midnight" gradient="linear-gradient(135deg, oklch(0.13 0.02 260), oklch(0.28 0.15 260))" />
-          <ThemeCard label="Slate" gradient="linear-gradient(135deg, oklch(0.15 0 0), oklch(0.35 0 0))" />
-        </div>
+      <Section icon={Palette} title="Aparência" desc="Escolha o tema da plataforma.">
+        <ThemePicker />
       </Section>
 
       <Section icon={Shield} title="Segurança" desc="Sua conta e privacidade.">
@@ -135,15 +132,34 @@ function Toggle({
   );
 }
 
-function ThemeCard({ label, gradient, active }: { label: string; gradient: string; active?: boolean }) {
+const THEME_PREVIEWS: Record<Theme, string> = {
+  dark: "linear-gradient(135deg, oklch(0.13 0.01 20), oklch(0.35 0.15 25))",
+  light: "linear-gradient(135deg, oklch(1 0 0), oklch(0.92 0.02 25))",
+  neutral: "linear-gradient(135deg, oklch(0.96 0.012 85), oklch(0.85 0.05 60))",
+};
+
+function ThemePicker() {
+  const { theme, setTheme } = useTheme();
   return (
-    <button
-      className={`overflow-hidden rounded-lg border p-1 text-left transition-all ${
-        active ? "border-primary shadow-[var(--shadow-red)]" : "border-border/60 hover:border-primary/40"
-      }`}
-    >
-      <div className="h-16 w-full rounded-md" style={{ background: gradient }} />
-      <p className="mt-2 px-1 pb-1 text-xs font-medium">{label}</p>
-    </button>
+    <div className="grid grid-cols-3 gap-3">
+      {THEMES.map((t) => {
+        const active = theme === t.value;
+        return (
+          <button
+            key={t.value}
+            onClick={() => setTheme(t.value)}
+            className={`overflow-hidden rounded-lg border p-1 text-left transition-all ${
+              active
+                ? "border-primary shadow-[var(--shadow-red)]"
+                : "border-border/60 hover:border-primary/40"
+            }`}
+          >
+            <div className="h-16 w-full rounded-md" style={{ background: THEME_PREVIEWS[t.value] }} />
+            <p className="mt-2 px-1 text-xs font-medium">{t.label}</p>
+            <p className="px-1 pb-1 text-[10px] text-muted-foreground">{t.description}</p>
+          </button>
+        );
+      })}
+    </div>
   );
 }
