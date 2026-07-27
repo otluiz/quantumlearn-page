@@ -28,6 +28,7 @@ function ChatPage() {
   const { data: docs, isLoading, isError } = useDocuments();
   const ready = useMemo(() => (docs ?? []).filter(isDocReady), [docs]);
   const [selected, setSelected] = useState<LexDocument | null>(null);
+  const [resumoDoc, setResumoDoc] = useState<LexDocument | null>(null);
 
   useEffect(() => {
     if (!selected && ready.length > 0) setSelected(ready[0]);
