@@ -403,13 +403,20 @@ function ActionBtn({
   icon: Icon,
   label,
   href,
+  onClick,
+  highlight,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   href?: string;
+  onClick?: () => void;
+  highlight?: boolean;
 }) {
-  const cls =
-    "inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-white/5 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary";
+  const base =
+    "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors";
+  const cls = highlight
+    ? `${base} border-primary/40 bg-primary/10 text-primary hover:bg-primary/20`
+    : `${base} border-border/60 bg-white/5 text-muted-foreground hover:border-primary/40 hover:text-primary`;
   if (href) {
     return (
       <Link to={href} className={cls}>
@@ -418,7 +425,7 @@ function ActionBtn({
     );
   }
   return (
-    <button className={cls}>
+    <button onClick={onClick} className={cls}>
       <Icon className="h-3 w-3" /> {label}
     </button>
   );
