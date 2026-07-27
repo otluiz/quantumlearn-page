@@ -293,11 +293,16 @@ function Dashboard() {
             <DocCard
               key={doc.id}
               doc={doc}
-              onProcess={() => reprocess.mutate(doc.id)}
-              busy={reprocess.isPending && reprocess.variables === doc.id}
+              onProcess={() => reprocess.mutate(doc)}
+              onResumo={() => handleResumo(doc)}
+              busy={reprocess.isPending && reprocess.variables?.id === doc.id}
             />
           ))}
         </div>
+      )}
+
+      {resumoDoc && (
+        <ResumoModal document={resumoDoc} onClose={() => setResumoDoc(null)} />
       )}
     </div>
   );
