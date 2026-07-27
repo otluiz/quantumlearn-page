@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Send, Bot, User, FileText, Sparkles, Trash2, BrainCircuit, Loader2, AlertTriangle } from "lucide-react";
+import { Send, Bot, User, FileText, Sparkles, Trash2, BrainCircuit, Loader2, AlertTriangle, BookOpen } from "lucide-react";
 import { isDocReady, type LexDocument } from "@/lib/api";
 import { useAsk, useDocuments } from "@/hooks/use-documents";
+import { ResumoModal } from "@/components/resumo-modal";
 
 export const Route = createFileRoute("/app/chat")({
   head: () => ({ meta: [{ title: "Chat I.A. — Nexlearn" }] }),
