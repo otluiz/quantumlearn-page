@@ -263,6 +263,7 @@ function ChatPage() {
           </div>
         </div>
       </div>
+      {resumoDoc && <ResumoModal document={resumoDoc} onClose={() => setResumoDoc(null)} />}
     </div>
   );
 }
