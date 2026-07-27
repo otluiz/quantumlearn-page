@@ -341,7 +341,17 @@ function StatCard({
   );
 }
 
-function DocCard({ doc, onProcess, busy }: { doc: LexDocument; onProcess: () => void; busy: boolean }) {
+function DocCard({
+  doc,
+  onProcess,
+  onResumo,
+  busy,
+}: {
+  doc: LexDocument;
+  onProcess: () => void;
+  onResumo: () => void;
+  busy: boolean;
+}) {
   const ready = isDocReady(doc);
   const processing = isDocProcessing(doc);
 
@@ -365,8 +375,8 @@ function DocCard({ doc, onProcess, busy }: { doc: LexDocument; onProcess: () => 
       <div className="mt-4 flex flex-wrap gap-2">
         {ready ? (
           <>
-            <ActionBtn icon={BookOpen} label="Resumo" />
-            <ActionBtn icon={FileQuestion} label="10 Quiz" />
+            <ActionBtn icon={BookOpen} label="Resumo" onClick={onResumo} highlight />
+            <ActionBtn icon={FileQuestion} label="Quiz" />
             <ActionBtn icon={Layers} label="Flashcards" />
             <ActionBtn icon={MessageSquare} label="Chat" href="/app/chat" />
           </>
