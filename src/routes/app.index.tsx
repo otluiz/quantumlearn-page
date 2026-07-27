@@ -26,6 +26,7 @@ import {
 
 import { useDocuments, useReprocessDocument, documentsKey } from "@/hooks/use-documents";
 import { UploadProgress, deriveStage } from "@/components/upload-progress";
+import { ResumoModal } from "@/components/resumo-modal";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({ meta: [{ title: "Dashboard — Nexlearn" }] }),
