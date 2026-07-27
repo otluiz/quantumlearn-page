@@ -28,10 +28,14 @@ export function useUploadDocument() {
   });
 }
 
+/**
+ * Processa um PDF já enviado. O backend indexa por filename_original,
+ * então passamos o documento inteiro e usamos seu nome como doc_id.
+ */
 export function useReprocessDocument() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string | number) => api.reprocess(id),
+    mutationFn: (doc: LexDocument) => api.processDocument(doc.filename_original),
     onSuccess: () => qc.invalidateQueries({ queryKey: documentsKey }),
   });
 }

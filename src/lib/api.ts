@@ -109,12 +109,46 @@ async function request<T>(
   return (ct.includes("application/json") ? await res.json() : (await res.text() as unknown)) as T;
 }
 
-// ---------- Endpoints ----------
+// ---------- Resumo types (contrato /api/resumo) ----------
+
+export interface ResumoArtigo {
+  numero: string | number;
+  descricao: string;
+}
+
+export interface ResumoData {
+  total_artigos: number;
+  ementa?: string;
+  estrutura?: string;
+  principais_artigos?: ResumoArtigo[];
+  alteracoes?: string;
+}
+
+export interface ResumoResponse {
+  resumo: ResumoData;
+  resumo_id: string | number;
+  origem: string; // "cache" | "cache-*" | "ai" | ...
+}
+
+export interface DashboardStats {
+  pending_documents?: number;
+  completed_documents?: number;
+  total_questions_generated?: number;
+}
+
+// ---------- Endpoints (espelham lexApi.js) ----------
 
 export const api = {
-  health: () => request<{ status: string } | string>("/api/health"),
+  health: () => request<{ status: string } | string>("/health"),
 
-  listDocuments: () => request<LexDocument[]>("/api/documents"),
+  /** GET /api/documents/list -> { total, documents } */
+  listDocuments: async (): Promise<LexDocument[]> => {
+    const r = await request<{ total?: number; documents?: LexDocument[] } | LexDocument[]>(
+      "/api/documents/list",
+    );
+    if (Array.isArray(r)) return r;
+    return r.documents ?? [];
+  },
 
   getDocument: (id: string | number) =>
     request<LexDocument>(`/api/documents/${encodeURIComponent(String(id))}`),
@@ -128,6 +162,8 @@ export const api = {
       json: patch,
     }),
 
+  getDashboardStats: () => request<DashboardStats>("/api/dashboard/stats"),
+
   upload: (file: File, description?: string) => {
     const form = new FormData();
     form.append("file", file);
@@ -139,8 +175,7 @@ export const api = {
   },
 
   /**
-   * Upload com progresso real (XHR) — usado pela UI do pipeline para
-   * mostrar a barra "Recebendo arquivo" em tempo real.
+   * Upload com progresso real (XHR) para a barra "Recebendo arquivo".
    */
   uploadWithProgress: (
     file: File,
@@ -172,16 +207,48 @@ export const api = {
       xhr.send(form);
     }),
 
-  reprocess: (id: string | number) =>
-    request<LexDocument>(`/api/process/${encodeURIComponent(String(id))}`, {
+  /**
+   * POST /api/process-pdf com { doc_id: filename_original }.
+   * O backend indexa por nome do arquivo, não pelo id numérico.
+   */
+  processDocument: (filename: string) =>
+    request<LexDocument>("/api/process-pdf", {
       method: "POST",
+      json: { doc_id: filename },
     }),
 
   ask: (payload: AskRequest) =>
     request<AskResponse>("/api/ask", { method: "POST", json: payload }),
 
-  quiz: (documentId: string | number) =>
-    request<unknown>("/api/quiz", { method: "POST", json: { document_id: documentId } }),
+  /** POST /api/resumo — serve do cache quando disponível */
+  getResumo: (
+    documentId: string | number,
+    opts: { tipo?: string; forcarRegeneracao?: boolean } = {},
+  ) =>
+    request<ResumoResponse>("/api/resumo", {
+      method: "POST",
+      json: {
+        document_id: documentId,
+        tipo: opts.tipo ?? "executivo",
+        forcar_regeneracao: opts.forcarRegeneracao ?? false,
+      },
+    }),
+
+  /** POST /api/resumo/revisar */
+  revisarResumo: (
+    resumoId: string | number,
+    tipoAcao: "confirmar" | "sugerir_correcao" | "reportar_erro",
+    opts: { userId?: string | number | null; comentario?: string | null } = {},
+  ) =>
+    request<unknown>("/api/resumo/revisar", {
+      method: "POST",
+      json: {
+        resumo_id: resumoId,
+        user_id: opts.userId ?? null,
+        tipo_acao: tipoAcao,
+        comentario: opts.comentario ?? null,
+      },
+    }),
 };
 
 // ---------- Helpers de UI ----------
