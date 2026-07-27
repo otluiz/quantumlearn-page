@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Send, Bot, User, FileText, Sparkles, Trash2, BrainCircuit, Loader2, AlertTriangle } from "lucide-react";
+import { Send, Bot, User, FileText, Sparkles, Trash2, BrainCircuit, Loader2, AlertTriangle, BookOpen } from "lucide-react";
 import { isDocReady, type LexDocument } from "@/lib/api";
 import { useAsk, useDocuments } from "@/hooks/use-documents";
+import { ResumoModal } from "@/components/resumo-modal";
 
 export const Route = createFileRoute("/app/chat")({
   head: () => ({ meta: [{ title: "Chat I.A. — Nexlearn" }] }),
@@ -27,6 +28,7 @@ function ChatPage() {
   const { data: docs, isLoading, isError } = useDocuments();
   const ready = useMemo(() => (docs ?? []).filter(isDocReady), [docs]);
   const [selected, setSelected] = useState<LexDocument | null>(null);
+  const [resumoDoc, setResumoDoc] = useState<LexDocument | null>(null);
 
   useEffect(() => {
     if (!selected && ready.length > 0) setSelected(ready[0]);
@@ -142,6 +144,15 @@ function ChatPage() {
               {selected ? `Conversando sobre ${selected.filename_original}` : "Selecione um documento"}
             </p>
           </div>
+          {selected && (
+            <button
+              onClick={() => setResumoDoc(selected)}
+              title="Ver resumo deste documento"
+              className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary hover:bg-primary/20"
+            >
+              <BookOpen className="h-3.5 w-3.5" /> Resumo
+            </button>
+          )}
           <button
             onClick={() =>
               setMessages(
@@ -252,6 +263,7 @@ function ChatPage() {
           </div>
         </div>
       </div>
+      {resumoDoc && <ResumoModal document={resumoDoc} onClose={() => setResumoDoc(null)} />}
     </div>
   );
 }

@@ -26,6 +26,7 @@ import {
 
 import { useDocuments, useReprocessDocument, documentsKey } from "@/hooks/use-documents";
 import { UploadProgress, deriveStage } from "@/components/upload-progress";
+import { ResumoModal } from "@/components/resumo-modal";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({ meta: [{ title: "Dashboard — Nexlearn" }] }),
@@ -50,7 +51,10 @@ function Dashboard() {
 
   const [dragActive, setDragActive] = useState(false);
   const [pending, setPending] = useState<PendingUpload[]>([]);
+  const [resumoDoc, setResumoDoc] = useState<LexDocument | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+
+  const handleResumo = (d: LexDocument) => setResumoDoc(d);
 
   const list = docs ?? [];
   const raw = list.filter((d) => d.status === "uploaded" && !isDocProcessing(d)).length;
@@ -290,11 +294,16 @@ function Dashboard() {
             <DocCard
               key={doc.id}
               doc={doc}
-              onProcess={() => reprocess.mutate(doc.id)}
-              busy={reprocess.isPending && reprocess.variables === doc.id}
+              onProcess={() => reprocess.mutate(doc)}
+              onResumo={() => handleResumo(doc)}
+              busy={reprocess.isPending && reprocess.variables?.id === doc.id}
             />
           ))}
         </div>
+      )}
+
+      {resumoDoc && (
+        <ResumoModal document={resumoDoc} onClose={() => setResumoDoc(null)} />
       )}
     </div>
   );
@@ -333,7 +342,17 @@ function StatCard({
   );
 }
 
-function DocCard({ doc, onProcess, busy }: { doc: LexDocument; onProcess: () => void; busy: boolean }) {
+function DocCard({
+  doc,
+  onProcess,
+  onResumo,
+  busy,
+}: {
+  doc: LexDocument;
+  onProcess: () => void;
+  onResumo: () => void;
+  busy: boolean;
+}) {
   const ready = isDocReady(doc);
   const processing = isDocProcessing(doc);
 
@@ -357,8 +376,8 @@ function DocCard({ doc, onProcess, busy }: { doc: LexDocument; onProcess: () => 
       <div className="mt-4 flex flex-wrap gap-2">
         {ready ? (
           <>
-            <ActionBtn icon={BookOpen} label="Resumo" />
-            <ActionBtn icon={FileQuestion} label="10 Quiz" />
+            <ActionBtn icon={BookOpen} label="Resumo" onClick={onResumo} highlight />
+            <ActionBtn icon={FileQuestion} label="Quiz" />
             <ActionBtn icon={Layers} label="Flashcards" />
             <ActionBtn icon={MessageSquare} label="Chat" href="/app/chat" />
           </>
@@ -385,13 +404,20 @@ function ActionBtn({
   icon: Icon,
   label,
   href,
+  onClick,
+  highlight,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   href?: string;
+  onClick?: () => void;
+  highlight?: boolean;
 }) {
-  const cls =
-    "inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-white/5 px-2.5 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary";
+  const base =
+    "inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors";
+  const cls = highlight
+    ? `${base} border-primary/40 bg-primary/10 text-primary hover:bg-primary/20`
+    : `${base} border-border/60 bg-white/5 text-muted-foreground hover:border-primary/40 hover:text-primary`;
   if (href) {
     return (
       <Link to={href} className={cls}>
@@ -400,7 +426,7 @@ function ActionBtn({
     );
   }
   return (
-    <button className={cls}>
+    <button onClick={onClick} className={cls}>
       <Icon className="h-3 w-3" /> {label}
     </button>
   );
