@@ -144,6 +144,15 @@ function ChatPage() {
               {selected ? `Conversando sobre ${selected.filename_original}` : "Selecione um documento"}
             </p>
           </div>
+          {selected && (
+            <button
+              onClick={() => setResumoDoc(selected)}
+              title="Ver resumo deste documento"
+              className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1.5 text-xs font-medium text-primary hover:bg-primary/20"
+            >
+              <BookOpen className="h-3.5 w-3.5" /> Resumo
+            </button>
+          )}
           <button
             onClick={() =>
               setMessages(
