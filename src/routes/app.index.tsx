@@ -50,7 +50,10 @@ function Dashboard() {
 
   const [dragActive, setDragActive] = useState(false);
   const [pending, setPending] = useState<PendingUpload[]>([]);
+  const [resumoDoc, setResumoDoc] = useState<LexDocument | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+
+  const handleResumo = (d: LexDocument) => setResumoDoc(d);
 
   const list = docs ?? [];
   const raw = list.filter((d) => d.status === "uploaded" && !isDocProcessing(d)).length;
