@@ -3,7 +3,22 @@ import { useState } from "react";
 import { RotateCw, ChevronLeft, ChevronRight, X, Check } from "lucide-react";
 
 export const Route = createFileRoute("/app/flashcards")({
-  head: () => ({ meta: [{ title: "Flashcards — Nexlearn" }] }),
+  head: () => ({
+    meta: [
+      { title: "Flashcards — LexLearn" },
+      {
+        name: "description",
+        content: "Revise conceitos e legislação com flashcards para fortalecer sua preparação.",
+      },
+      { property: "og:title", content: "Flashcards — LexLearn" },
+      {
+        property: "og:description",
+        content: "Revise conceitos e legislação com flashcards para fortalecer sua preparação.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: FlashcardsPage,
 });
 

@@ -2,7 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TrendingUp, Clock, Target, Flame, BookCheck, Award } from "lucide-react";
 
 export const Route = createFileRoute("/app/stats")({
-  head: () => ({ meta: [{ title: "Estatísticas — Nexlearn" }] }),
+  head: () => ({
+    meta: [
+      { title: "Estatísticas — LexLearn" },
+      {
+        name: "description",
+        content: "Acompanhe seu tempo de estudo, revisões e desempenho por tema no LexLearn.",
+      },
+      { property: "og:title", content: "Estatísticas — LexLearn" },
+      {
+        property: "og:description",
+        content: "Acompanhe seu tempo de estudo, revisões e desempenho por tema no LexLearn.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: StatsPage,
 });
 

@@ -29,7 +29,24 @@ import { UploadProgress, deriveStage } from "@/components/upload-progress";
 import { ResumoModal } from "@/components/resumo-modal";
 
 export const Route = createFileRoute("/app/")({
-  head: () => ({ meta: [{ title: "Dashboard — Nexlearn" }] }),
+  head: () => ({
+    meta: [
+      { title: "Painel de estudos — LexLearn" },
+      {
+        name: "description",
+        content:
+          "Organize seus documentos, acompanhe o processamento de PDFs e retome sua preparação.",
+      },
+      { property: "og:title", content: "Painel de estudos — LexLearn" },
+      {
+        property: "og:description",
+        content:
+          "Organize seus documentos, acompanhe o processamento de PDFs e retome sua preparação.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Dashboard,
 });
 

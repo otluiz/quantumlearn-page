@@ -4,7 +4,22 @@ import { User, Bell, Palette, Shield, Zap } from "lucide-react";
 import { useTheme, THEMES, type Theme } from "@/lib/theme";
 
 export const Route = createFileRoute("/app/settings")({
-  head: () => ({ meta: [{ title: "Configurações — Nexlearn" }] }),
+  head: () => ({
+    meta: [
+      { title: "Configurações — LexLearn" },
+      {
+        name: "description",
+        content: "Gerencie suas preferências de estudo, aparência e perfil no LexLearn.",
+      },
+      { property: "og:title", content: "Configurações — LexLearn" },
+      {
+        property: "og:description",
+        content: "Gerencie suas preferências de estudo, aparência e perfil no LexLearn.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: SettingsPage,
 });
 

@@ -12,7 +12,24 @@ import {
 import { useDocuments } from "@/hooks/use-documents";
 
 export const Route = createFileRoute("/app/documents")({
-  head: () => ({ meta: [{ title: "Documentos — Nexlearn" }] }),
+  head: () => ({
+    meta: [
+      { title: "Documentos — LexLearn" },
+      {
+        name: "description",
+        content:
+          "Encontre e organize os materiais e a legislação da sua preparação para concursos.",
+      },
+      { property: "og:title", content: "Documentos — LexLearn" },
+      {
+        property: "og:description",
+        content:
+          "Encontre e organize os materiais e a legislação da sua preparação para concursos.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: DocumentsPage,
 });
 

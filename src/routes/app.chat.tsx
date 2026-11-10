@@ -6,7 +6,24 @@ import { useAsk, useDocuments } from "@/hooks/use-documents";
 import { ResumoModal } from "@/components/resumo-modal";
 
 export const Route = createFileRoute("/app/chat")({
-  head: () => ({ meta: [{ title: "Chat I.A. — Nexlearn" }] }),
+  head: () => ({
+    meta: [
+      { title: "Chat com documentos — LexLearn" },
+      {
+        name: "description",
+        content:
+          "Converse sobre sua legislação e consulte os resumos dos seus documentos de estudo.",
+      },
+      { property: "og:title", content: "Chat com documentos — LexLearn" },
+      {
+        property: "og:description",
+        content:
+          "Converse sobre sua legislação e consulte os resumos dos seus documentos de estudo.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: ChatPage,
 });
 

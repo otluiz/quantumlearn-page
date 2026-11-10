@@ -2,7 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { GraduationCap, Play, Clock, Trophy, Flame, Target } from "lucide-react";
 
 export const Route = createFileRoute("/app/study")({
-  head: () => ({ meta: [{ title: "Estudar — Nexlearn" }] }),
+  head: () => ({
+    meta: [
+      { title: "Estudar — LexLearn" },
+      {
+        name: "description",
+        content: "Retome suas trilhas e organize suas sessões de preparação para concursos.",
+      },
+      { property: "og:title", content: "Estudar — LexLearn" },
+      {
+        property: "og:description",
+        content: "Retome suas trilhas e organize suas sessões de preparação para concursos.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: StudyPage,
 });
 
