@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as LexlearnRouteImport } from './routes/lexlearn'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppChatRouteImport } from './routes/app.chat'
 import { Route as AppDocumentsRouteImport } from './routes/app.documents'
@@ -27,6 +30,21 @@ const IndexRoute = IndexRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CadastroRoute = CadastroRouteImport.update({
+  id: '/cadastro',
+  path: '/cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LexlearnRoute = LexlearnRouteImport.update({
+  id: '/lexlearn',
+  path: '/lexlearn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -68,6 +86,9 @@ const AppStudyRoute = AppStudyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/cadastro': typeof CadastroRoute
+  '/lexlearn': typeof LexlearnRoute
+  '/login': typeof LoginRoute
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
@@ -78,6 +99,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRoute
+  '/lexlearn': typeof LexlearnRoute
+  '/login': typeof LoginRoute
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
@@ -90,6 +114,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/cadastro': typeof CadastroRoute
+  '/lexlearn': typeof LexlearnRoute
+  '/login': typeof LoginRoute
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
@@ -103,6 +130,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/cadastro'
+    | '/lexlearn'
+    | '/login'
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
@@ -113,6 +143,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/cadastro'
+    | '/lexlearn'
+    | '/login'
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
@@ -124,6 +157,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/cadastro'
+    | '/lexlearn'
+    | '/login'
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
@@ -136,6 +172,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  CadastroRoute: typeof CadastroRoute
+  LexlearnRoute: typeof LexlearnRoute
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -152,6 +191,27 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cadastro': {
+      id: '/cadastro'
+      path: '/cadastro'
+      fullPath: '/cadastro'
+      preLoaderRoute: typeof CadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lexlearn': {
+      id: '/lexlearn'
+      path: '/lexlearn'
+      fullPath: '/lexlearn'
+      preLoaderRoute: typeof LexlearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -231,6 +291,9 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  CadastroRoute: CadastroRoute,
+  LexlearnRoute: LexlearnRoute,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
