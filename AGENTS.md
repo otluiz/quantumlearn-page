@@ -12,4 +12,4 @@
 - Keep LexPubli styles scoped to `.lexpubli`; the existing LexLearn workspace must retain its own design tokens and data contracts.
 - Render the three LexPubli concepts from one shared home and a validated optional `v` search parameter so content and interactions stay consistent.
 - Home radar records are a labeled, session-only presentation of cited historical authorizations, not a live monitoring service; do not imply durable subscriptions without a connected service.
-- Keep the LexLearn marketing landing under /lexlearn with its own scoped stylesheet; /cadastro and /login must state when authentication is not connected rather than simulate account creation.
+- Keep the LexLearn marketing landing under /lexlearn with its own scoped stylesheet; access pages share a presentation-only form and access-specific scoped CSS, always disclose the preview, prevent submission, and offer /app only as an explicit preview link while authentication is disconnected.
