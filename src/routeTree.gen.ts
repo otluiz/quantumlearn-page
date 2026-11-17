@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as LexlearnRouteImport } from './routes/lexlearn'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as RecuperarSenhaRouteImport } from './routes/recuperar-senha'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppChatRouteImport } from './routes/app.chat'
 import { Route as AppDocumentsRouteImport } from './routes/app.documents'
@@ -45,6 +46,11 @@ const LexlearnRoute = LexlearnRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecuperarSenhaRoute = RecuperarSenhaRouteImport.update({
+  id: '/recuperar-senha',
+  path: '/recuperar-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/cadastro': typeof CadastroRoute
   '/lexlearn': typeof LexlearnRoute
   '/login': typeof LoginRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/cadastro': typeof CadastroRoute
   '/lexlearn': typeof LexlearnRoute
   '/login': typeof LoginRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
@@ -117,6 +125,7 @@ export interface FileRoutesById {
   '/cadastro': typeof CadastroRoute
   '/lexlearn': typeof LexlearnRoute
   '/login': typeof LoginRoute
+  '/recuperar-senha': typeof RecuperarSenhaRoute
   '/app/chat': typeof AppChatRoute
   '/app/documents': typeof AppDocumentsRoute
   '/app/flashcards': typeof AppFlashcardsRoute
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/cadastro'
     | '/lexlearn'
     | '/login'
+    | '/recuperar-senha'
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
     | '/cadastro'
     | '/lexlearn'
     | '/login'
+    | '/recuperar-senha'
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '/cadastro'
     | '/lexlearn'
     | '/login'
+    | '/recuperar-senha'
     | '/app/chat'
     | '/app/documents'
     | '/app/flashcards'
@@ -175,6 +187,7 @@ export interface RootRouteChildren {
   CadastroRoute: typeof CadastroRoute
   LexlearnRoute: typeof LexlearnRoute
   LoginRoute: typeof LoginRoute
+  RecuperarSenhaRoute: typeof RecuperarSenhaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recuperar-senha': {
+      id: '/recuperar-senha'
+      path: '/recuperar-senha'
+      fullPath: '/recuperar-senha'
+      preLoaderRoute: typeof RecuperarSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -294,6 +314,7 @@ const rootRouteChildren: RootRouteChildren = {
   CadastroRoute: CadastroRoute,
   LexlearnRoute: LexlearnRoute,
   LoginRoute: LoginRoute,
+  RecuperarSenhaRoute: RecuperarSenhaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
