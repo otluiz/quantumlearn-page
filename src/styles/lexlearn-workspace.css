@@ -124,3 +124,55 @@
 @media (prefers-reduced-motion: reduce) {
   .ls-discipline summary svg { transition: none; }
 }
+.ls-question-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; align-items: start; }
+.ls-question-layout.ls-with-chat { grid-template-columns: minmax(0, 1.25fr) minmax(300px, 1fr); }
+.ls-question-column { min-width: 0; }
+.ls-question-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.ls-question-actions button { white-space: normal; height: auto; min-height: 38px; font-size: 11px; text-align: left; }
+.ls-feedback-panel, .ls-question-chat { margin-top: 20px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); padding: 22px; }
+.ls-question-chat { margin-top: 0; }
+.ls-panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 10px; }
+.ls-panel-heading h3 { display: flex; align-items: center; gap: 8px; font-size: 14px; line-height: 1.7; font-weight: 600; }
+.ls-panel-heading svg { width: 17px; height: 17px; flex-shrink: 0; }
+.ls-preview-warning { font-size: 11px; line-height: 1.8; color: var(--muted-foreground); margin-block: 15px; padding-left: 12px; border-left: 2px solid var(--lp-signal); }
+.ls-preview-warning strong { color: var(--lp-signal-ink); }
+.ls-feedback-panel form, .ls-question-chat form { display: grid; gap: 12px; }
+.ls-feedback-panel label, .ls-question-chat label { font-size: 12px; line-height: 1.7; font-weight: 500; }
+.ls-feedback-panel textarea, .ls-feedback-panel select, .ls-question-chat textarea { width: 100%; min-width: 0; border: 1px solid var(--input); border-radius: 8px; background: var(--background); color: var(--foreground); padding: 12px; font-size: 14px; line-height: 1.7; }
+.ls-feedback-panel textarea, .ls-question-chat textarea { resize: vertical; }
+.ls-feedback-panel textarea:focus-visible, .ls-feedback-panel select:focus-visible, .ls-question-chat textarea:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.ls-feedback-panel form p { font-size: 11px; color: var(--muted-foreground); }
+.ls-report-received { font-size: 12px; line-height: 1.9; }
+.ls-report-received p { margin-block: 12px; }
+.ls-report-received a, .ls-chat-exchange a { display: inline-flex; gap: 7px; color: var(--lp-link); font-size: 12px; line-height: 1.8; align-items: start; }
+.ls-chat-exchange a svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 4px; }
+.ls-chat-promise { font-family: var(--font-editorial); font-size: 20px; line-height: 1.6; margin-top: 16px; }
+.ls-chat-suggestions { display: grid; gap: 8px; }
+.ls-chat-suggestions button { white-space: normal; height: auto; min-height: 40px; text-align: left; justify-content: start; font-size: 11px; line-height: 1.7; }
+.ls-chat-messages { max-height: 650px; overflow-y: auto; margin-block: 20px; }
+.ls-chat-exchange { border-top: 1px solid var(--border); padding-block: 16px; font-size: 12px; line-height: 1.9; }
+.ls-chat-exchange > p { margin-bottom: 12px; }
+.ls-chat-exchange .ls-chat-question { padding: 12px; border-radius: 8px; background: var(--secondary); }
+.ls-chat-exchange > button { margin-block: 8px; font-size: 11px; }
+.ls-withdrawn { border-left: 2px solid var(--lp-signal); background: var(--lp-tint); padding: 12px; margin-bottom: 18px; font-size: 12px; line-height: 1.8; }
+.ls-my-reports { margin-top: 32px; padding-block: 28px; border-block: 1px solid var(--border); }
+.ls-my-reports .ls-section-heading > svg { color: var(--lp-signal); width: 22px; }
+.ls-report-list { display: grid; gap: 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ls-report-item { border: 1px solid var(--border); border-radius: 14px; background: var(--card); padding: 20px; min-width: 0; overflow-wrap: anywhere; }
+.ls-report-item-top { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; font-size: 9px; color: var(--muted-foreground); }
+.ls-review-status { display: inline-block; font-size: 11px; border-radius: 6px; padding: 4px 8px; }
+.ls-review-pending { color: var(--lp-signal-ink); background: var(--lp-tint); }
+.ls-review-confirmed { color: var(--lp-link); background: var(--secondary); }
+.ls-review-dismissed { color: var(--muted-foreground); border: 1px solid var(--border); }
+.ls-report-item h3 { font-size: 14px; line-height: 1.8; margin-bottom: 10px; }
+.ls-report-item p { font-size: 11px; color: var(--muted-foreground); line-height: 1.8; margin-block: 8px; }
+.ls-report-item > strong { font-size: 12px; display: block; margin-top: 14px; }
+.ls-review-reply { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 16px; font-size: 12px; }
+@media (max-width: 1100px) {
+  .ls-question-layout.ls-with-chat { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .ls-report-list { grid-template-columns: minmax(0, 1fr); }
+  .ls-feedback-panel, .ls-question-chat { padding: 18px; }
+  .ls-feedback-panel textarea, .ls-feedback-panel select, .ls-question-chat textarea { font-size: 16px; }
+}

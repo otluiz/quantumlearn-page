@@ -17,3 +17,8 @@
 - [x] Exibir concurso ativo e banca em toda a área /app, com identidade LexLearn.
 - [x] Criar itinerário, recursos por tópico e treino com origem e fundamento oficial.
 - [x] Testar troca de concurso/banca, questões, contagem de dias e telas menores.
+
+# Marcações e perguntas — prévia
+- [x] Criar relato obrigatório, retirada local da questão e histórico em /app.
+- [x] Adicionar perguntas com citações e exemplo sem resposta no material.
+- [x] Testar limite de 30 caracteres, ausência de envio, histórico e telas menores.

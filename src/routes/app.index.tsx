@@ -27,6 +27,7 @@ import {
 import { useDocuments, useReprocessDocument, documentsKey } from "@/hooks/use-documents";
 import { UploadProgress, deriveStage } from "@/components/upload-progress";
 import { ResumoModal } from "@/components/resumo-modal";
+import { MyQuestionReports } from "@/components/my-question-reports";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -159,6 +160,7 @@ function Dashboard() {
 
       </div>
 
+      <MyQuestionReports />
       {/* Stats */}
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <StatCard icon={FileText} label="PDFs Brutos" value={raw} accent="muted" />
