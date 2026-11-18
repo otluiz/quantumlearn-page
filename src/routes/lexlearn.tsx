@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { ThemeButton } from "@/components/theme-toggle";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -8,9 +8,7 @@ import {
   CheckCircle2,
   FileText,
   ListChecks,
-  Moon,
   ShieldCheck,
-  Sun,
   Target,
   X,
 } from "lucide-react";
@@ -46,9 +44,8 @@ export const Route = createFileRoute("/lexlearn")({
 });
 
 function LexLearnLanding() {
-  const [dark, setDark] = useState(true);
   return (
-    <div className={`lexpubli ll-site${dark ? " lp-dark" : ""}`}>
+    <div className="lexpubli ll-site">
       <header className="ll-wrap ll-header">
         <Link to="/lexlearn" className="ll-brand">
           <BookOpen />
@@ -73,15 +70,7 @@ function LexLearnLanding() {
           </Button>
         </nav>
         <div className="ll-actions">
-          <Button
-            variant="ghost"
-            size="icon"
-            title={dark ? "Usar tema claro" : "Usar tema escuro"}
-            aria-label={dark ? "Usar tema claro" : "Usar tema escuro"}
-            onClick={() => setDark(!dark)}
-          >
-            {dark ? <Sun /> : <Moon />}
-          </Button>
+          <ThemeButton />
           <Button className="ll-primary" asChild>
             <Link to="/cadastro">
               Criar conta <ArrowRight />

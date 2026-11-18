@@ -2,11 +2,9 @@ import { CalendarDays, Target, Info } from "lucide-react";
 import { useStudyContext } from "@/components/study-context";
 import { DEMO_CONTESTS, countdownLabel, daysUntilExam } from "@/lib/study-demo";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useTheme } from "@/lib/theme";
 
 export function ActiveContest() {
   const { contest, selectContest, trainingBoard, extraBoard, today, followedIds } = useStudyContext();
-  const { theme } = useTheme();
   return <section className="ls-contest" aria-label="Concurso ativo">
     <div className="ls-contest-main">
       <Target className="ls-contest-icon" aria-hidden="true" />
@@ -14,7 +12,7 @@ export function ActiveContest() {
         <label className="ls-eyebrow" id="active-contest-label">CONCURSO ATIVO · EXEMPLO</label>
         <Select value={contest.id} onValueChange={selectContest}>
           <SelectTrigger aria-labelledby="active-contest-label"><SelectValue /></SelectTrigger>
-          <SelectContent className={`lexpubli ll-workspace ll-workspace-menu${theme === "dark" ? " lp-dark" : ""}`}>
+          <SelectContent className="lexpubli ll-workspace ll-workspace-menu">
             {DEMO_CONTESTS.filter(item => followedIds.includes(item.id)).map((item) => <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>)}
           </SelectContent>
         </Select>

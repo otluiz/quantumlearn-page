@@ -11,16 +11,15 @@ import {
   FileCheck2,
   Landmark,
   Menu,
-  Moon,
   Radio,
   Radar,
   Search,
   ShieldCheck,
-  Sun,
   Target,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeButton } from "@/components/theme-toggle";
 import dawn from "@/assets/lexpubli-dawn.jpg";
 
 export type HomeVariation = "vigilia" | "editorial" | "sinal";
@@ -114,7 +113,6 @@ export function LexPubliHome({
   variation: HomeVariation;
   onVariation: (v: HomeVariation) => void;
 }) {
-  const [dark, setDark] = useState(false);
   const [menu, setMenu] = useState(false);
   const [filter, setFilter] = useState("Todos");
   const [query, setQuery] = useState("");
@@ -130,7 +128,7 @@ export function LexPubliHome({
     setFollowed((prev) => (prev.includes(name) ? prev.filter((n) => n !== name) : [...prev, name]));
   }
   return (
-    <div className={`lexpubli lp-${variation}${dark ? " lp-dark" : ""}`}>
+    <div className={`lexpubli lp-${variation}`}>
       <div className="lp-concept-bar">
         <div className="lp-container lp-concept-inner">
           <span className="lp-concept-label">UM PASSO ANTES DO EDITAL</span>
@@ -174,15 +172,7 @@ export function LexPubliHome({
             </Button>
           </nav>
           <div className="lp-header-actions">
-            <Button
-              variant="ghost"
-              size="icon"
-              title={dark ? "Usar tema claro" : "Usar tema escuro"}
-              aria-label={dark ? "Usar tema claro" : "Usar tema escuro"}
-              onClick={() => setDark(!dark)}
-            >
-              {dark ? <Sun /> : <Moon />}
-            </Button>
+            <ThemeButton />
             <Button className="lp-cta lp-header-cta" onClick={scrollToRadar}>
               Acompanhar um concurso <ArrowRight />
             </Button>

@@ -7,7 +7,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStudyContext } from "@/components/study-context";
 import { StudyPractice } from "@/components/study-practice";
 import { DEMO_BOARDS, type Resource, type StudyTopic } from "@/lib/study-demo";
-import { useTheme } from "@/lib/theme";
 
 export const Route = createFileRoute("/app/study")({
   head: () => ({
@@ -40,7 +39,6 @@ const resources: { id: Resource; name: string; icon: typeof BookOpen }[] = [
 ];
 function StudyItinerary() {
   const { contest, extraBoard, setExtraBoard, trainingBoard } = useStudyContext();
-  const { theme } = useTheme();
   const initial = contest.disciplines.flatMap((item) => item.topics).find((topic) => topic.resources.includes("questoes"));
   const [selected, setSelected] = useState<{ topic: StudyTopic; resource: Resource } | null>(initial ? { topic: initial, resource: "questoes" } : null);
   function openResource(topic: StudyTopic, resource: Resource) {
@@ -52,7 +50,7 @@ function StudyItinerary() {
     <section className="ls-board-controls" aria-label="Banca de treino">
       <p>Banca do concurso: <strong>{contest.board}</strong></p>
       <div className="ls-board-option"><Checkbox id="extra-board" checked={extraBoard !== null} onCheckedChange={(checked) => setExtraBoard(checked === true ? DEMO_BOARDS.find((board) => board !== contest.board) ?? null : null)} /><label htmlFor="extra-board">Treinar também com o estilo de outra banca</label></div>
-      {extraBoard && <div className="ls-board-select"><Select value={extraBoard} onValueChange={setExtraBoard}><SelectTrigger aria-label="Outra banca"><SelectValue /></SelectTrigger><SelectContent className={`lexpubli ll-workspace ll-workspace-menu${theme === "dark" ? " lp-dark" : ""}`}>{DEMO_BOARDS.filter((board) => board !== contest.board).map((board) => <SelectItem key={board} value={board}>{board}</SelectItem>)}</SelectContent></Select></div>}
+      {extraBoard && <div className="ls-board-select"><Select value={extraBoard} onValueChange={setExtraBoard}><SelectTrigger aria-label="Outra banca"><SelectValue /></SelectTrigger><SelectContent className="lexpubli ll-workspace ll-workspace-menu">{DEMO_BOARDS.filter((board) => board !== contest.board).map((board) => <SelectItem key={board} value={board}>{board}</SelectItem>)}</SelectContent></Select></div>}
       <span className="ls-bank-label">{extraBoard ? `Estilo adicional ativo: ${trainingBoard}` : `Estilo do concurso: ${trainingBoard}`}</span>
     </section>
     <section aria-label="Itinerário do edital"><div className="ls-section-heading"><div><span className="ls-eyebrow">CONTEÚDO PROGRAMÁTICO · EXEMPLO</span><h2>Itinerário do edital</h2><p>Disponibilidade ilustrativa por disciplina e tópico, sem promessa de cobertura integral.</p></div></div>

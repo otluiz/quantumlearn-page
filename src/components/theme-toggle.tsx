@@ -1,5 +1,17 @@
 import { Moon, Sun, Palette } from "lucide-react";
 import { useTheme, type Theme } from "@/lib/theme";
+import { Button } from "@/components/ui/button";
+
+export function ThemeButton() {
+  const { theme, setTheme } = useTheme();
+  const label = theme === "dark" ? "Usar tema claro" : "Usar tema escuro";
+  return (
+    <Button variant="ghost" size="icon" type="button" title={label} aria-label={label}
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+      {theme === "dark" ? <Sun /> : <Moon />}
+    </Button>
+  );
+}
 
 const OPTIONS: { value: Theme; label: string; Icon: typeof Sun }[] = [
   { value: "dark", label: "Escuro", Icon: Moon },
@@ -18,7 +30,8 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
       {OPTIONS.map(({ value, label, Icon }) => {
         const active = theme === value;
         return (
-          <button
+          <Button
+            variant="ghost"
             key={value}
             role="radio"
             aria-checked={active}
@@ -32,7 +45,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
           >
             <Icon className="h-3.5 w-3.5" />
             {!compact && <span>{label}</span>}
-          </button>
+          </Button>
         );
       })}
     </div>

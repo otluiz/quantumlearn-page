@@ -1,9 +1,7 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTheme } from "@/lib/theme";
+import { ThemeButton } from "@/components/theme-toggle";
 import { StudyProvider, useStudyContext } from "@/components/study-context";
 import { ActiveContest } from "@/components/active-contest";
 import workspaceCss from "@/styles/lexlearn-workspace.css?url";
@@ -25,10 +23,9 @@ export const Route = createFileRoute("/app")({
 });
 
 function AppLayout() {
-  const { theme, setTheme } = useTheme();
   return (
     <StudyProvider>
-    <SidebarProvider defaultOpen className={`lexpubli ll-workspace${theme === "dark" ? " lp-dark" : ""}`}>
+    <SidebarProvider defaultOpen className="lexpubli ll-workspace">
       <div className="flex min-h-screen w-full bg-background text-foreground">
         <AppSidebar />
 
@@ -36,7 +33,7 @@ function AppLayout() {
           <header className="ls-app-header">
             <div><SidebarTrigger className="text-muted-foreground hover:text-foreground" aria-label="Abrir ou fechar menu" /><span>LexLearn · Área de estudos</span></div>
             <TrainingBoardIndicator />
-            <Button variant="ghost" size="icon" title={theme === "dark" ? "Usar tema claro" : "Usar tema escuro"} aria-label={theme === "dark" ? "Usar tema claro" : "Usar tema escuro"} onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? <Sun /> : <Moon />}</Button>
+            <ThemeButton />
           </header>
           <ActiveContest />
           <main className="min-w-0 flex-1">

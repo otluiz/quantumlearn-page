@@ -1,26 +1,20 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { ArrowLeft, ArrowRight, BookOpen, Info, LockKeyhole, Moon, Sun } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Info, LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeButton } from "@/components/theme-toggle";
 
 export function LexLearnAccess({ mode }: { mode: "cadastro" | "login" | "recuperar-senha" }) {
-  const [dark, setDark] = useState(true);
   const recovery = mode === "recuperar-senha";
   const signup = mode === "cadastro";
   const title = signup ? "Criar sua conta" : recovery ? "Recuperar sua senha" : "Entrar na sua conta";
   return (
-    <main className={`lexpubli ll-site ll-access${dark ? " lp-dark" : ""}`}>
+    <main className="lexpubli ll-site ll-access">
       <header className="ll-access-header">
         <Link to="/lexlearn" className="ll-brand">
           <BookOpen />
           LexLearn<span>.</span>
         </Link>
-        <Button variant="ghost" size="icon" type="button"
-          aria-label={dark ? "Usar tema claro" : "Usar tema escuro"}
-          title={dark ? "Usar tema claro" : "Usar tema escuro"}
-          onClick={() => setDark(!dark)}>
-          {dark ? <Sun /> : <Moon />}
-        </Button>
+        <ThemeButton />
       </header>
       <div className="ll-access-content">
         <LockKeyhole className="ll-access-icon" aria-hidden="true" />

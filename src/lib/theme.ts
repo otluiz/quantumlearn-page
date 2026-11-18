@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useSyncExternalStore } from "react";
 
 export type Theme = "dark" | "light" | "neutral";
 
@@ -9,12 +9,18 @@ export const THEMES: { value: Theme; label: string; description: string }[] = [
 ];
 
 const STORAGE_KEY = "nl-theme";
+const CHANGE_EVENT = "nl-theme-change";
+
+export function resolveTheme(value: unknown): Theme {
+  return value === "light" || value === "neutral" ? value : "dark";
+}
 
 export function applyTheme(theme: Theme) {
   if (typeof document === "undefined") return;
   const el = document.documentElement;
   el.classList.remove("theme-dark", "theme-light", "theme-neutral");
   el.classList.add(`theme-${theme}`);
+  window.dispatchEvent(new Event(CHANGE_EVENT));
   try {
     localStorage.setItem(STORAGE_KEY, theme);
   } catch {
@@ -30,23 +36,26 @@ function readInitial(): Theme {
   return "dark";
 }
 
+function subscribe(onChange: () => void) {
+  function onStorage(event: StorageEvent) {
+    if (event.key === STORAGE_KEY || event.key === null) {
+      applyTheme(resolveTheme(event.newValue));
+    }
+  }
+  window.addEventListener(CHANGE_EVENT, onChange);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    window.removeEventListener(CHANGE_EVENT, onChange);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
 export function useTheme() {
-  // Start with "dark" on server to match the SSR class; sync from DOM after mount.
-  const [theme, setThemeState] = useState<Theme>("dark");
-
-  useEffect(() => {
-    setThemeState(readInitial());
-  }, []);
-
-  const setTheme = useCallback((t: Theme) => {
-    applyTheme(t);
-    setThemeState(t);
-  }, []);
-
-  return { theme, setTheme };
+  const theme = useSyncExternalStore(subscribe, readInitial, () => "dark" as Theme);
+  return { theme, setTheme: applyTheme };
 }
 
 /** Inline script injected in <head> to prevent FOUC. */
 export const THEME_INIT_SCRIPT = `
-(function(){try{var t=localStorage.getItem('${STORAGE_KEY}');if(t!=='light'&&t!=='neutral'&&t!=='dark')t='dark';document.documentElement.classList.add('theme-'+t);}catch(e){document.documentElement.classList.add('theme-dark');}})();
+(function(){var t='dark';try{t=localStorage.getItem('${STORAGE_KEY}');if(t!=='light'&&t!=='neutral'&&t!=='dark')t='dark';}catch(e){}document.documentElement.classList.remove('theme-dark','theme-light','theme-neutral');document.documentElement.classList.add('theme-'+t);})();
 `.trim();

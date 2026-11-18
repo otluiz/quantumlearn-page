@@ -27,3 +27,7 @@
 - [x] Refazer flashcards e estatísticas com tópicos do concurso e exemplos identificados.
 - [x] Criar preferências locais, concursos acompanhados e privacidade de exemplo.
 - [x] Verificar revisões, troca de concurso, preferências e telas menores.
+
+# Tema unificado
+- [x] Unificar mecanismo e botão, com escolha salva e padrão escuro em todas as páginas.
+- [x] Verificar abertura e persistência entre páginas em 390 px.

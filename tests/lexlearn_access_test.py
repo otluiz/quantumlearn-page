@@ -13,6 +13,8 @@ async def main():
             ("/recuperar-senha", "Enviar link de recuperação"),
         ]:
             await page.goto("http://localhost:8080" + route, wait_until="networkidle")
+            await page.evaluate("localStorage.removeItem('nl-theme')")
+            await page.reload(wait_until="networkidle")
             await page.get_by_role("button", name=button, exact=True).wait_for()
             # Wait for hydration through a visible interaction before exercising form handlers.
             await page.get_by_role("button", name="Usar tema claro").click()
@@ -39,6 +41,8 @@ async def main():
             assert page.url.endswith(route), "Form must not navigate"
             print(route, "submission disabled and no data sent")
         await page.goto("http://localhost:8080/login", wait_until="networkidle")
+        await page.evaluate("localStorage.removeItem('nl-theme')")
+        await page.reload(wait_until="networkidle")
         await page.get_by_role("button", name="Usar tema claro").click()
         await page.get_by_role("button", name="Usar tema escuro").wait_for()
         await page.get_by_role("link", name="Explorar / conhecer a prévia").click()
