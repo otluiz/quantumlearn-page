@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useTheme } from "@/lib/theme";
 
 export function ActiveContest() {
-  const { contest, selectContest, trainingBoard, extraBoard, today } = useStudyContext();
+  const { contest, selectContest, trainingBoard, extraBoard, today, followedIds } = useStudyContext();
   const { theme } = useTheme();
   return <section className="ls-contest" aria-label="Concurso ativo">
     <div className="ls-contest-main">
@@ -15,7 +15,7 @@ export function ActiveContest() {
         <Select value={contest.id} onValueChange={selectContest}>
           <SelectTrigger aria-labelledby="active-contest-label"><SelectValue /></SelectTrigger>
           <SelectContent className={`lexpubli ll-workspace ll-workspace-menu${theme === "dark" ? " lp-dark" : ""}`}>
-            {DEMO_CONTESTS.map((item) => <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>)}
+            {DEMO_CONTESTS.filter(item => followedIds.includes(item.id)).map((item) => <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>)}
           </SelectContent>
         </Select>
         <p>{contest.role} <span aria-hidden="true">·</span> Banca do concurso: <strong>{contest.board}</strong></p>

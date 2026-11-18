@@ -1,9 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { RotateCw, ChevronLeft, ChevronRight, X, Check } from "lucide-react";
+import { RotateCw, ChevronLeft, ChevronRight, X, Check, CircleHelp, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useStudyContext } from "@/components/study-context";
+import { contestCards, type ReviewRating } from "@/lib/study-tools";
+import toolsCss from "@/styles/study-tools.css?url";
 
 export const Route = createFileRoute("/app/flashcards")({
   head: () => ({
+    links: [{ rel: "stylesheet", href: toolsCss }],
     meta: [
       { title: "Flashcards — LexLearn" },
       {
@@ -22,106 +27,44 @@ export const Route = createFileRoute("/app/flashcards")({
   component: FlashcardsPage,
 });
 
-const cards = [
-  { q: "O que é o princípio da legalidade na Administração Pública?", a: "O administrador só pode fazer aquilo que a lei expressamente autoriza (art. 37, CF/88)." },
-  { q: "Quais são os princípios expressos da Administração Pública?", a: "Legalidade, Impessoalidade, Moralidade, Publicidade e Eficiência (LIMPE)." },
-  { q: "O que caracteriza improbidade administrativa?", a: "Atos que causam enriquecimento ilícito, prejuízo ao erário ou violam princípios administrativos (Lei 8.429/92)." },
-  { q: "Qual o prazo prescricional para ato de improbidade?", a: "8 anos, contados a partir do fato ou, no caso de infração permanente, da cessação." },
-];
-
 function FlashcardsPage() {
-  const [i, setI] = useState(0);
+  const { contest } = useStudyContext();
+  return <ContestFlashcards key={contest.id} />;
+}
+function ContestFlashcards() {
+  const { contest, reviews, rateCard } = useStudyContext();
+  const cards = contestCards(contest);
+  const [topicId, setTopicId] = useState("todos");
+  const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-
-  const next = () => {
-    setFlipped(false);
-    setI((prev) => (prev + 1) % cards.length);
-  };
-  const prev = () => {
-    setFlipped(false);
-    setI((prev) => (prev - 1 + cards.length) % cards.length);
-  };
-
-  const card = cards[i];
-
-  return (
-    <div className="mx-auto max-w-3xl px-6 py-8">
-      <p className="text-xs uppercase tracking-widest text-primary/80">Memorização ativa</p>
-      <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">Flashcards</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Baralho: <span className="text-foreground">Direito Constitucional</span> · Card{" "}
-        <span className="text-primary">{i + 1}</span>/{cards.length}
-      </p>
-
-      <div className="mt-4 h-1 overflow-hidden rounded-full bg-white/5">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-primary to-primary/40 transition-all"
-          style={{ width: `${((i + 1) / cards.length) * 100}%` }}
-        />
-      </div>
-
-      {/* Card */}
-      <div
-        onClick={() => setFlipped((f) => !f)}
-        className="mt-8 group relative min-h-[320px] cursor-pointer overflow-hidden rounded-2xl border border-border/60 bg-surface/60 p-10 transition-all hover:border-primary/40 hover:shadow-[var(--shadow-red)]"
-      >
-        <div className="pointer-events-none absolute inset-0 opacity-30" style={{ background: "var(--gradient-hero)" }} />
-        <div className="pointer-events-none absolute inset-0 bg-grid opacity-40" />
-
-        <div className="relative flex h-full flex-col">
-          <span className="text-[10px] uppercase tracking-widest text-primary">
-            {flipped ? "Resposta" : "Pergunta"}
-          </span>
-          <p className="mt-4 font-display text-2xl font-semibold leading-snug text-foreground lg:text-3xl">
-            {flipped ? card.a : card.q}
-          </p>
-          <div className="mt-auto pt-8 text-xs text-muted-foreground">
-            Clique no card para {flipped ? "ver a pergunta" : "revelar a resposta"}
-          </div>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="mt-6 flex items-center justify-between">
-        <button
-          onClick={prev}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-surface/60 px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <ChevronLeft className="h-4 w-4" /> Anterior
-        </button>
-
-        <button
-          onClick={() => setFlipped((f) => !f)}
-          className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-2 text-sm text-primary hover:bg-primary/20"
-        >
-          <RotateCw className="h-4 w-4" /> Virar
-        </button>
-
-        <button
-          onClick={next}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-surface/60 px-3 py-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          Próximo <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
-
-      {/* Rate */}
-      {flipped && (
-        <div className="mt-6 grid grid-cols-2 gap-3">
-          <button
-            onClick={next}
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-destructive/40 bg-destructive/10 py-3 text-sm font-medium text-destructive hover:bg-destructive/20"
-          >
-            <X className="h-4 w-4" /> Errei
-          </button>
-          <button
-            onClick={next}
-            className="inline-flex items-center justify-center gap-2 rounded-md border border-emerald-500/40 bg-emerald-500/10 py-3 text-sm font-medium text-emerald-400 hover:bg-emerald-500/20"
-          >
-            <Check className="h-4 w-4" /> Acertei
-          </button>
-        </div>
-      )}
-    </div>
-  );
+  const [message, setMessage] = useState("");
+  const visible = cards.filter(card => topicId === "todos" || card.topic.id === topicId);
+  const card = visible[index];
+  const topics = contest.disciplines.flatMap(d => d.topics);
+  function move(delta: number) { if (!visible.length) return; setIndex(i => (i + delta + visible.length) % visible.length); setFlipped(false); }
+  function rate(rating: ReviewRating) {
+    if (!card || !flipped) return;
+    rateCard(card.key, rating);
+    setMessage(`Revisão de exemplo registrada: ${rating === "dificil" ? "difícil" : rating}. Próxima revisão ${rating === "errei" ? "em 10 minutos" : rating === "dificil" ? "em 1 dia" : "em 3 dias"}. Apenas nesta sessão.`);
+    move(1);
+  }
+  const review = reviews.find(item => item.key === card?.key);
+  return <div className="ls-study">
+    <span className="ls-eyebrow">REVISÃO DO EDITAL · EXEMPLO</span><h1>Flashcards do seu concurso</h1>
+    <p className="ls-study-intro">{contest.name} · {contest.role}. Cartões e agenda de revisão ilustrativos, sem histórico real conectado.</p>
+    <label className="ls-tools-field">Tópico do itinerário<select aria-label="Tópico do itinerário" value={topicId} onChange={e => { setTopicId(e.target.value); setIndex(0); setFlipped(false); setMessage(""); }}><option value="todos">Todos os tópicos disponíveis</option>{contest.disciplines.map(d => <optgroup key={d.name} label={d.name}>{d.topics.map(t => <option key={t.id} value={t.id}>{t.name}{t.flashcard ? "" : " — ainda não temos"}</option>)}</optgroup>)}</select></label>
+    {card ? <>
+      <article className="ls-flashcard" aria-label="Cartão de revisão">
+        <span className="ls-eyebrow">{flipped ? "RESPOSTA · EXEMPLO" : "PERGUNTA · EXEMPLO"}</span>
+        <p className="ls-card-context">{contest.name}<br />{card.discipline} · {card.topic.name}</p>
+        <p className="ls-card-question">{flipped ? card.topic.flashcard?.back : card.topic.flashcard?.front}</p>
+        {flipped && <div className="ls-card-law"><strong>{card.topic.article}</strong><blockquote>“{card.topic.lawText}”</blockquote><a href={card.topic.officialUrl} target="_blank" rel="noopener noreferrer">Conferir no texto oficial <ExternalLink size={14} /></a></div>}
+      </article>
+      <div className="ls-tools-actions"><Button variant="outline" size="icon" aria-label="Cartão anterior" title="Cartão anterior" onClick={() => move(-1)}><ChevronLeft /></Button><Button variant="outline" onClick={() => setFlipped(!flipped)}><RotateCw />{flipped ? "Ver pergunta" : "Revelar resposta"}</Button><Button variant="outline" size="icon" aria-label="Próximo cartão" title="Próximo cartão" onClick={() => move(1)}><ChevronRight /></Button><span className="ls-tools-note">Cartão {index+1} de {visible.length} · exemplo</span></div>
+      <div className="ls-review-ratings"><Button variant="outline" disabled={!flipped} onClick={() => rate("errei")}><X />Errei<small>Rever em 10 min · exemplo</small></Button><Button variant="outline" disabled={!flipped} onClick={() => rate("dificil")}><CircleHelp />Difícil<small>Rever em 1 dia · exemplo</small></Button><Button variant="outline" disabled={!flipped} onClick={() => rate("acertei")}><Check />Acertei<small>Rever em 3 dias · exemplo</small></Button></div>
+      {review && <p className="ls-tools-note">Revisão agendada nesta sessão: {new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(review.dueAt))} · exemplo.</p>}
+    </> : <p className="ls-tools-status">Ainda não temos flashcards para este tópico neste exemplo.</p>}
+    {message && <p role="status" className="ls-tools-status">{message}</p>}
+    <section className="ls-tools-section"><h2>Lacunas do itinerário</h2>{topics.filter(t => !t.flashcard).map(t => <p key={t.id}>{t.name} · ainda não temos flashcards neste exemplo.</p>)}</section>
+  </div>;
 }

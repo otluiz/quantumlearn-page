@@ -22,3 +22,8 @@
 - [x] Criar relato obrigatório, retirada local da questão e histórico em /app.
 - [x] Adicionar perguntas com citações e exemplo sem resposta no material.
 - [x] Testar limite de 30 caracteres, ausência de envio, histórico e telas menores.
+
+# Revisão, estatísticas e preferências por concurso
+- [x] Refazer flashcards e estatísticas com tópicos do concurso e exemplos identificados.
+- [x] Criar preferências locais, concursos acompanhados e privacidade de exemplo.
+- [x] Verificar revisões, troca de concurso, preferências e telas menores.

@@ -1,8 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { TrendingUp, Clock, Target, Flame, BookCheck, Award } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useStudyContext } from "@/components/study-context";
+import { contestMetrics } from "@/lib/study-tools";
+import { countdownLabel, daysUntilExam } from "@/lib/study-demo";
+import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import toolsCss from "@/styles/study-tools.css?url";
 
 export const Route = createFileRoute("/app/stats")({
   head: () => ({
+    links: [{ rel: "stylesheet", href: toolsCss }],
     meta: [
       { title: "Estatísticas — LexLearn" },
       {
@@ -21,120 +27,20 @@ export const Route = createFileRoute("/app/stats")({
   component: StatsPage,
 });
 
-const weekly = [42, 68, 55, 90, 74, 58, 82];
-const topics = [
-  { name: "Direito Constitucional", pct: 88 },
-  { name: "Administração Pública", pct: 74 },
-  { name: "Ética", pct: 92 },
-  { name: "ECA", pct: 41 },
-  { name: "LDB", pct: 22 },
-];
-
 function StatsPage() {
-  const max = Math.max(...weekly);
-  const days = ["seg", "ter", "qua", "qui", "sex", "sáb", "dom"];
-
-  return (
-    <div className="mx-auto max-w-7xl px-6 py-8">
-      <p className="text-xs uppercase tracking-widest text-primary/80">Analytics</p>
-      <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">Estatísticas</h1>
-
-      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <Kpi icon={Flame} label="Streak" value="14 dias" delta="+2" />
-        <Kpi icon={Clock} label="Tempo total" value="47h 30m" delta="+8h" />
-        <Kpi icon={BookCheck} label="Cards revisados" value="1.284" delta="+112" />
-        <Kpi icon={Award} label="Acerto médio" value="86%" delta="+4%" />
-      </div>
-
-      <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-xl border border-border/60 bg-surface/60 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="font-display text-lg font-semibold">Tempo de estudo — última semana</h2>
-              <p className="text-xs text-muted-foreground">Minutos por dia</p>
-            </div>
-            <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-primary">
-              <TrendingUp className="h-3 w-3" /> +18%
-            </span>
-          </div>
-          <div className="mt-8 flex h-56 items-end gap-3">
-            {weekly.map((v, i) => (
-              <div key={i} className="group flex flex-1 flex-col items-center gap-2">
-                <div className="relative flex h-full w-full items-end">
-                  <div
-                    className="w-full rounded-t-md bg-gradient-to-t from-primary to-primary/40 transition-all group-hover:from-primary group-hover:to-primary/70"
-                    style={{ height: `${(v / max) * 100}%` }}
-                  />
-                  <span className="absolute -top-6 left-1/2 -translate-x-1/2 rounded bg-primary px-1.5 py-0.5 text-[10px] font-medium text-primary-foreground opacity-0 transition-opacity group-hover:opacity-100">
-                    {v}m
-                  </span>
-                </div>
-                <span className="text-[10px] uppercase tracking-widest text-muted-foreground">{days[i]}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-border/60 bg-surface/60 p-6">
-          <h2 className="font-display text-lg font-semibold">Domínio por tópico</h2>
-          <p className="text-xs text-muted-foreground">Acurácia média</p>
-          <div className="mt-6 space-y-4">
-            {topics.map((t) => (
-              <div key={t.name}>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">{t.name}</span>
-                  <span className="font-semibold text-foreground">{t.pct}%</span>
-                </div>
-                <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/5">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-primary to-primary/40"
-                    style={{ width: `${t.pct}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 rounded-xl border border-border/60 bg-surface/60 p-6">
-        <div className="flex items-start gap-4">
-          <div className="grid h-11 w-11 place-items-center rounded-lg bg-primary/15 text-primary shadow-[var(--shadow-glow)]">
-            <Target className="h-5 w-5" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-display font-semibold">Sua próxima meta</h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Complete <span className="text-primary font-medium">3 sessões</span> em ECA para subir a acurácia acima de 60%.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Kpi({
-  icon: Icon,
-  label,
-  value,
-  delta,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  delta: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border/60 bg-surface/60 p-5">
-      <div className="flex items-center justify-between">
-        <span className="text-xs uppercase tracking-widest text-muted-foreground">{label}</span>
-        <Icon className="h-4 w-4 text-primary" />
-      </div>
-      <div className="mt-3 flex items-end justify-between">
-        <p className="font-display text-2xl font-bold">{value}</p>
-        <span className="text-xs text-emerald-400">{delta}</span>
-      </div>
-    </div>
-  );
+  const { contest, today } = useStudyContext();
+  const disciplines = contestMetrics(contest);
+  const priority = disciplines.flatMap(d => d.topics).filter(t => t.metric).sort((a,b) => ((b.metric?.incidence ?? 0)*(1-(b.metric?.correct ?? 0)/(b.metric?.attempts ?? 1))) - ((a.metric?.incidence ?? 0)*(1-(a.metric?.correct ?? 0)/(a.metric?.attempts ?? 1))));
+  return <div className="ls-study"><span className="ls-eyebrow">ESTATÍSTICAS DO ALUNO · DADOS DE EXEMPLO</span><h1>Onde concentrar seu treino</h1><p className="ls-study-intro">{contest.name} · banca do concurso: {contest.board}.</p>
+    <p className="ls-tools-status">Todos os resultados e percentuais abaixo são fictícios. Não são seu desempenho real nem uma análise de provas da {contest.board}.</p>
+    <section className="ls-tools-section"><h2>{countdownLabel(daysUntilExam(contest.examDate, today))}</h2><p>Contagem até a data de prova de exemplo. Compare seu treino com a incidência ilustrativa da banca do concurso, não com outros alunos.</p></section>
+    {disciplines.map(d => {
+      const total = d.topics.reduce((n,t) => n+(t.metric?.attempts ?? 0),0);
+      const correct = d.topics.reduce((n,t) => n+(t.metric?.correct ?? 0),0);
+      return <section key={d.name} className="ls-tools-section"><h2>{d.name}</h2><p>{total ? `${correct} acertos em ${total} questões · ${Math.round(correct/total*100)}% · desempenho de exemplo` : "Sem treino registrado neste exemplo."}</p>
+        {d.topics.map(t => <div className="ls-stat-topic" key={t.id}><h3>{t.name}</h3>{t.metric ? <><div><strong>{Math.round(t.metric.correct/t.metric.attempts*100)}%</strong><span>Acertos · exemplo ({t.metric.correct}/{t.metric.attempts})</span><progress max={100} value={t.metric.correct/t.metric.attempts*100} aria-label={`Acertos de exemplo em ${t.name}`} /></div><div className="ls-incidence"><strong>{t.metric.incidence}%</strong><span>“Este tópico caiu em {t.metric.incidence}% das provas da {contest.board}” — exemplo fictício, não apurado.</span><progress max={100} value={t.metric.incidence} aria-label={`Incidência fictícia em ${t.name}`} /></div></> : <><span>Sem desempenho de exemplo.</span><span>Incidência não disponível · ainda não temos.</span></>}</div>)}
+      </section>;
+    })}
+    <section className="ls-tools-section"><h2>Tópicos que mais precisam de treino</h2><p>Prioridade de exemplo: menor acerto combinado com maior incidência fictícia. Não é uma previsão de prova.</p><ul className="ls-priority-list">{priority.map(t => <li key={t.id}>{t.name}<span>{Math.round((t.metric?.correct ?? 0)/(t.metric?.attempts ?? 1)*100)}% de acertos · incidência {t.metric?.incidence}% · exemplo</span></li>)}</ul><Button asChild variant="outline"><Link to="/app/study">Retomar o itinerário <ArrowRight /></Link></Button></section>
+  </div>;
 }
