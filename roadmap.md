@@ -12,3 +12,8 @@
 # Acesso LexLearn em prévia
 - [x] Criar formulários de login, cadastro e recuperação com envio desativado.
 - [x] Verificar ausência de envio, navegação para /app e temas em telas menores.
+
+# Estudo por concurso — demonstração
+- [x] Exibir concurso ativo e banca em toda a área /app, com identidade LexLearn.
+- [x] Criar itinerário, recursos por tópico e treino com origem e fundamento oficial.
+- [x] Testar troca de concurso/banca, questões, contagem de dias e telas menores.

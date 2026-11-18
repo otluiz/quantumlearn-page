@@ -13,3 +13,5 @@
 - Render the three LexPubli concepts from one shared home and a validated optional `v` search parameter so content and interactions stay consistent.
 - Home radar records are a labeled, session-only presentation of cited historical authorizations, not a live monitoring service; do not imply durable subscriptions without a connected service.
 - Keep the LexLearn marketing landing under /lexlearn with its own scoped stylesheet; access pages share a presentation-only form and access-specific scoped CSS, always disclose the preview, prevent submission, and offer /app only as an explicit preview link while authentication is disconnected.
+- Keep contest-oriented study fixtures separate from the document API; a session-only provider in /app shares contest and training-board selection across child routes, and contest/board changes reset practice state to prevent stale origins.
+- Scope the LexLearn workspace palette to its /app wrapper and study stylesheet; use the landing's semantic palette without changing public-page styles or document data contracts.

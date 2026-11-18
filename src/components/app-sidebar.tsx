@@ -7,7 +7,7 @@ import {
   MessageSquare,
   BarChart3,
   Settings,
-  BrainCircuit,
+  BookOpen,
 } from "lucide-react";
 
 import {
@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 
 const mainItems = [
-  { title: "Dashboard", url: "/app", icon: LayoutDashboard, exact: true },
+  { title: "Visão geral", url: "/app", icon: LayoutDashboard, exact: true },
   { title: "Documentos", url: "/app/documents", icon: FileText },
   { title: "Estudar", url: "/app/study", icon: GraduationCap },
   { title: "Flashcards", url: "/app/flashcards", icon: Layers },
@@ -54,8 +54,8 @@ export function AppSidebar() {
           isActive={active}
           className={
             active
-              ? "bg-gradient-to-r from-primary/20 to-transparent text-foreground border-l-2 border-primary rounded-l-none"
-              : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+              ? "bg-secondary text-foreground border-l-2 border-primary rounded-l-none"
+              : "text-muted-foreground hover:text-foreground hover:bg-secondary"
           }
         >
           <Link to={item.url}>
@@ -68,14 +68,14 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/40" style={{ backgroundColor: "var(--sidebar)" }}>
+    <Sidebar collapsible="icon" className="border-r border-border/40">
       <SidebarHeader className="border-b border-border/40 py-4">
         <Link to="/app" className="flex items-center gap-2 px-2">
-          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-primary shadow-[var(--shadow-glow)]">
-            <BrainCircuit className="h-4.5 w-4.5 text-primary-foreground" />
+          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md text-primary">
+            <BookOpen className="h-5 w-5" />
           </div>
           {!collapsed && (
-            <span className="font-display text-base font-semibold tracking-tight">nexlearn</span>
+            <span className="font-display text-xl font-medium">LexLearn<span className="text-primary">.</span></span>
           )}
         </Link>
       </SidebarHeader>
@@ -84,7 +84,7 @@ export function AppSidebar() {
         <SidebarGroup>
           {!collapsed && (
             <SidebarGroupLabel className="text-[10px] uppercase tracking-widest text-muted-foreground/60">
-              Workspace
+              Preparação
             </SidebarGroupLabel>
           )}
           <SidebarGroupContent>
@@ -106,13 +106,13 @@ export function AppSidebar() {
 
       <SidebarFooter className="border-t border-border/40 p-3">
         <div className="flex items-center gap-3">
-          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary to-primary/50 text-sm font-semibold text-primary-foreground">
+          <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-secondary text-sm font-semibold text-foreground">
             A
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-foreground">Aluno Nexlearn</p>
-              <p className="truncate text-xs text-muted-foreground">Plano Pro</p>
+              <p className="truncate text-sm font-medium text-foreground">Aluno de exemplo</p>
+              <p className="truncate text-xs text-muted-foreground">Prévia · sem conta conectada</p>
             </div>
           )}
         </div>

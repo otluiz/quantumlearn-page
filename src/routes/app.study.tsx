@@ -1,5 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { GraduationCap, Play, Clock, Trophy, Flame, Target } from "lucide-react";
+import { useState } from "react";
+import { BookOpen, ChevronRight, FileText, Layers, Info, CircleDashed } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useStudyContext } from "@/components/study-context";
+import { StudyPractice } from "@/components/study-practice";
+import { DEMO_BOARDS, type Resource, type StudyTopic } from "@/lib/study-demo";
+import { useTheme } from "@/lib/theme";
 
 export const Route = createFileRoute("/app/study")({
   head: () => ({
@@ -7,12 +15,12 @@ export const Route = createFileRoute("/app/study")({
       { title: "Estudar — LexLearn" },
       {
         name: "description",
-        content: "Retome suas trilhas e organize suas sessões de preparação para concursos.",
+        content: "Explore um itinerário de edital de exemplo e treine para seu concurso com questões, resumos, flashcards e fundamento no texto oficial da lei.",
       },
       { property: "og:title", content: "Estudar — LexLearn" },
       {
         property: "og:description",
-        content: "Retome suas trilhas e organize suas sessões de preparação para concursos.",
+        content: "Seu concurso orienta o treino. Demonstração de edital, bancas e questões com referências à legislação oficial.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -21,81 +29,38 @@ export const Route = createFileRoute("/app/study")({
   component: StudyPage,
 });
 
-const trilhas = [
-  { title: "Direito Constitucional", progress: 68, time: "3h 20min", modules: 12, color: "from-primary to-primary/40" },
-  { title: "Ética no Serviço Público", progress: 100, time: "1h 40min", modules: 6, color: "from-emerald-500 to-emerald-500/40" },
-  { title: "Estatuto do Servidor", progress: 34, time: "5h 10min", modules: 18, color: "from-primary to-primary/40" },
-  { title: "LDB — Lei de Diretrizes", progress: 12, time: "8h 00min", modules: 24, color: "from-amber-500 to-amber-500/40" },
-];
-
 function StudyPage() {
-  return (
-    <div className="mx-auto max-w-7xl px-6 py-8">
-      <p className="text-xs uppercase tracking-widest text-primary/80">Aprender</p>
-      <h1 className="mt-1 font-display text-3xl font-bold tracking-tight">Estudar</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Retome uma trilha ou comece uma nova sessão focada.</p>
-
-      {/* Streak row */}
-      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <MiniStat icon={Flame} label="Streak" value="14 dias" />
-        <MiniStat icon={Clock} label="Esta semana" value="8h 42min" />
-        <MiniStat icon={Target} label="Meta diária" value="82%" />
-        <MiniStat icon={Trophy} label="XP" value="12.480" />
-      </div>
-
-      {/* Trilhas */}
-      <h2 className="mt-10 font-display text-xl font-semibold">Trilhas ativas</h2>
-      <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-        {trilhas.map((t) => (
-          <div
-            key={t.title}
-            className="group relative overflow-hidden rounded-xl border border-border/60 bg-surface/60 p-6 transition-all hover:border-primary/40 hover:shadow-[var(--shadow-red)]"
-          >
-            <div className="pointer-events-none absolute inset-0 opacity-30" style={{ background: "var(--gradient-hero)" }} />
-            <div className="relative flex items-start justify-between">
-              <div className="grid h-11 w-11 place-items-center rounded-lg bg-primary/15 text-primary shadow-[var(--shadow-glow)]">
-                <GraduationCap className="h-5 w-5" />
-              </div>
-              <span className="text-xs text-muted-foreground">{t.modules} módulos · {t.time}</span>
-            </div>
-
-            <h3 className="relative mt-4 font-display text-lg font-semibold">{t.title}</h3>
-
-            <div className="relative mt-4">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Progresso</span>
-                <span className="font-medium text-foreground">{t.progress}%</span>
-              </div>
-              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/5">
-                <div className={`h-full rounded-full bg-gradient-to-r ${t.color}`} style={{ width: `${t.progress}%` }} />
-              </div>
-            </div>
-
-            <button className="relative mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-[var(--shadow-red)] transition-transform hover:scale-[1.01]">
-              <Play className="h-3.5 w-3.5 fill-current" /> Continuar trilha
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  const { contest, trainingBoard } = useStudyContext();
+  return <StudyItinerary key={`${contest.id}-${trainingBoard}`} />;
 }
-
-function MiniStat({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border/60 bg-surface/60 p-4">
-      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Icon className="h-3.5 w-3.5 text-primary" /> {label}
-      </div>
-      <p className="mt-1.5 font-display text-2xl font-bold">{value}</p>
-    </div>
-  );
+const resources: { id: Resource; name: string; icon: typeof BookOpen }[] = [
+  { id: "questoes", name: "Questões", icon: FileText },
+  { id: "resumo", name: "Resumo", icon: BookOpen },
+  { id: "flashcards", name: "Flashcards", icon: Layers },
+];
+function StudyItinerary() {
+  const { contest, extraBoard, setExtraBoard, trainingBoard } = useStudyContext();
+  const { theme } = useTheme();
+  const initial = contest.disciplines.flatMap((item) => item.topics).find((topic) => topic.resources.includes("questoes"));
+  const [selected, setSelected] = useState<{ topic: StudyTopic; resource: Resource } | null>(initial ? { topic: initial, resource: "questoes" } : null);
+  function openResource(topic: StudyTopic, resource: Resource) {
+    setSelected({ topic, resource });
+    window.requestAnimationFrame(() => document.getElementById("study-material")?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "start" }));
+  }
+  return <div className="ls-study">
+    <div className="ls-study-top"><div><span className="ls-eyebrow">DA INSCRIÇÃO À PROVA</span><h1>Seu edital, seu caminho.</h1><p className="ls-study-intro">Preparação para {contest.role}. Treino com a banca {trainingBoard}, com respostas ancoradas na lei.</p></div><span className="ls-demo-label"><Info />DADOS DE EXEMPLO</span></div>
+    <section className="ls-board-controls" aria-label="Banca de treino">
+      <p>Banca do concurso: <strong>{contest.board}</strong></p>
+      <div className="ls-board-option"><Checkbox id="extra-board" checked={extraBoard !== null} onCheckedChange={(checked) => setExtraBoard(checked === true ? DEMO_BOARDS.find((board) => board !== contest.board) ?? null : null)} /><label htmlFor="extra-board">Treinar também com o estilo de outra banca</label></div>
+      {extraBoard && <div className="ls-board-select"><Select value={extraBoard} onValueChange={setExtraBoard}><SelectTrigger aria-label="Outra banca"><SelectValue /></SelectTrigger><SelectContent className={`lexpubli ll-workspace ll-workspace-menu${theme === "dark" ? " lp-dark" : ""}`}>{DEMO_BOARDS.filter((board) => board !== contest.board).map((board) => <SelectItem key={board} value={board}>{board}</SelectItem>)}</SelectContent></Select></div>}
+      <span className="ls-bank-label">{extraBoard ? `Estilo adicional ativo: ${trainingBoard}` : `Estilo do concurso: ${trainingBoard}`}</span>
+    </section>
+    <section aria-label="Itinerário do edital"><div className="ls-section-heading"><div><span className="ls-eyebrow">CONTEÚDO PROGRAMÁTICO · EXEMPLO</span><h2>Itinerário do edital</h2><p>Disponibilidade ilustrativa por disciplina e tópico, sem promessa de cobertura integral.</p></div></div>
+      <div className="ls-itinerary">{contest.disciplines.map((discipline) => <details className="ls-discipline" key={discipline.name} open><summary><ChevronRight />{discipline.name}</summary>{discipline.topics.map((topic) => <div className="ls-topic" key={topic.id}><h3>{topic.name}</h3><div className="ls-topic-resources">{resources.map((resource) => topic.resources.includes(resource.id)
+        ? <Button variant="outline" key={resource.id} aria-label={`${resource.name} — ${topic.name}`} onClick={() => openResource(topic, resource.id)}><resource.icon />{resource.name}</Button>
+        : <span className="ls-missing" key={resource.id}><CircleDashed />{resource.name}: ainda não temos</span>)}</div></div>)}</details>)}</div>
+      <p className="ls-itinerary-note">Edital fictício e materiais ilustrativos. As lacunas acima pertencem a este exemplo; não representam o edital nem a cobertura de um concurso real.</p>
+    </section>
+    {selected && <StudyPractice key={`${selected.topic.id}-${selected.resource}`} topic={selected.topic} resource={selected.resource} />}
+  </div>;
 }
